@@ -13,7 +13,14 @@ A simple Irrlicht application with Oculus Rift support.
 
     make
     make install
+    cd ../
 
 ## To run
+
+### Windows
+
+### Linux
+
+    ./Binary/test
 
 ## License

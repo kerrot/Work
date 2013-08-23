@@ -120,8 +120,8 @@ int main()
 	IGUIEnvironment* guienv = device->getGUIEnvironment();
 	IGPUProgrammingServices* gpu = driver->getGPUProgrammingServices();
 
-	device->getFileSystem()->addFileArchive("map-20kdm2.pk3");
-	scene::IAnimatedMesh* mesh = smgr->getMesh("20kdm2.bsp");
+	device->getFileSystem()->addFileArchive("Resource/map-20kdm2.pk3");
+	scene::IAnimatedMesh* mesh = smgr->getMesh("Resource/20kdm2.bsp");
 	scene::ISceneNode* node = 0;
 
 	if (mesh)
