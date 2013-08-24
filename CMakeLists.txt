@@ -38,7 +38,7 @@ find_library (
 )
 find_library (
   OCULUS_SDK_LIB
-  NAMES ovr ovrd libovr libovrd
+  NAMES ovr ovrd libovr libovrd libovr64 libovr64d
   HINTS "${OCULUS_SDK_LIB_DIR}"
 )
 
@@ -52,7 +52,12 @@ link_directories ("${IRRLICHT_LIB_DIR}" "${OCULUS_SDK_LIB_DIR}")
 add_executable (test ${CMAKE_SOURCE_DIR}/Source/test/main.cpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries (test Irrlicht libovr Winmm)
+  if (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "x86")
+      target_link_libraries (test Irrlicht libovr Winmm)
+  elseif (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "AMD64")
+      target_link_libraries (test Irrlicht libovr64 Winmm)
+  endif ()
+
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   target_link_libraries (test Irrlicht GL X11 Xxf86vm ovr pthread udev Xinerama)
 endif ()
