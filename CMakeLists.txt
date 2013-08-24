@@ -6,10 +6,10 @@ set (CMAKE_BUILD_TYPE "Debug")
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   if (MSVC)
     if (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "x86")
-      set (IRRLICHT_SYSTEM_NAME "Win32-visualstudio")
+      set (IRRLICHT_SYSTEM_NAME "Win32-VisualStudio")
       set (OCULUS_SDK_SYSTEM_NAME "Win32")
     elseif (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "x64")
-      set (IRRLICHT_SYSTEM_NAME "Win64-visualStudio")
+      set (IRRLICHT_SYSTEM_NAME "Win64-VisualStudio")
       set (OCULUS_SDK_SYSTEM_NAME "x64")
     endif ()
   else ()
@@ -59,6 +59,13 @@ endif ()
 
 install (
   TARGETS test
-  RUNTIME DESTINATION ${CMAKE_BINARY_DIR}
+  DESTINATION ${CMAKE_BINARY_DIR}
 )
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+  install (
+	  FILES "${CMAKE_SOURCE_DIR}/ThirdParty/irrlicht-1.8/bin/${IRRLICHT_SYSTEM_NAME}/Irrlicht.dll"
+    DESTINATION ${CMAKE_BINARY_DIR}
+  )
+endif ()
 
