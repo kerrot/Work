@@ -49,7 +49,7 @@ include_directories (
 
 link_directories ("${IRRLICHT_LIB_DIR}" "${OCULUS_SDK_LIB_DIR}")
 
-add_executable (test ${CMAKE_SOURCE_DIR}/Source/test/main.cpp)
+add_executable (test ${CMAKE_SOURCE_DIR}/Source/main.cpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   if (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "x86")
