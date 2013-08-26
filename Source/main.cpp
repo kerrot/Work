@@ -147,17 +147,21 @@ int main()
 
     RiftDistortionCallback* m_cDistortionCB = new RiftDistortionCallback();
 
-    f32 m_fLensShift = 4.0f * (hmd.HScreenSize / 4.0f - hmd.LensSeparationDistance/2.0f) / hmd.HScreenSize;
-    f32 l_fR         = -1.0f - (4.0f * (hmd.HScreenSize / 4.0f - hmd.LensSeparationDistance / 2.0f) / hmd.HScreenSize);
-    f32 l_fDistScale = (hmd.DistortionK[0] + hmd.DistortionK[1] * pow(l_fR,2) + hmd.DistortionK[2] * pow(l_fR,4) + hmd.DistortionK[3] * pow(l_fR,6));
+    f32 m_hShift = hmd.HScreenSize / 4.0f - hmd.LensSeparationDistance / 2.0f;
+    f32 l_hShift = 4.0f * m_hShift / hmd.HScreenSize;
+    f32 l_fR         = -1.0f - l_hShift;
+    f32 l_fDistScale =
+        hmd.DistortionK[0] +
+        hmd.DistortionK[1] * pow(l_fR,2) +
+        hmd.DistortionK[2] * pow(l_fR,4) +
+        hmd.DistortionK[3] * pow(l_fR,6);
     f32 l_fAspect    = hmd.HResolution / (2.0f * hmd.VResolution);
     f32 l_fFov       = 2.0f * atan2(hmd.VScreenSize * l_fDistScale, 2.0f * hmd.EyeToScreenDistance);
-    f32    l_fH         = 4 * (hmd.HScreenSize / 4 - hmd.InterpupillaryDistance/2) / hmd.HScreenSize;
 
     matrix4 l_cCenterProjection = irr::core::matrix4().buildProjectionMatrixPerspectiveFovLH (l_fFov, l_fAspect, 1, 10000);
 
-    matrix4 m_cProjectionLeft = irr::core::matrix4().setTranslation(irr::core::vector3df( l_fH, 0.0, 0.0)) * l_cCenterProjection;
-    matrix4 m_cProjectionRght = irr::core::matrix4().setTranslation(irr::core::vector3df(-l_fH, 0.0, 0.0)) * l_cCenterProjection;
+    matrix4 m_cProjectionLeft = irr::core::matrix4().setTranslation(irr::core::vector3df( l_hShift, 0.0, 0.0)) * l_cCenterProjection;
+    matrix4 m_cProjectionRght = irr::core::matrix4().setTranslation(irr::core::vector3df(-l_hShift, 0.0, 0.0)) * l_cCenterProjection;
 
     m_cDistortionCB->m_fScale[0] = 1.0f            / l_fDistScale;
     m_cDistortionCB->m_fScale[1] = 1.0f * l_fAspect/ l_fDistScale;
@@ -332,7 +336,7 @@ int main()
         driver->setTransform(video::ETS_VIEW, core::matrix4());
         driver->setTransform(video::ETS_WORLD, core::matrix4());
         driver->setTransform(video::ETS_PROJECTION, core::matrix4());
-        m_cDistortionCB->m_fLensCenter[0] = m_fLensShift;
+        m_cDistortionCB->m_fLensCenter[0] = l_hShift;
         driver->setMaterial(m_cRenderMaterial);
         driver->drawIndexedTriangleList(m_cPlaneVertices, 4, m_iPlaneIndices, 2);
 
@@ -356,7 +360,7 @@ int main()
         driver->setTransform(video::ETS_PROJECTION, core::matrix4());
  
         driver->setViewPort(rect<s32>(640,0,1280,800));
-        m_cDistortionCB->m_fLensCenter[0] = -m_fLensShift;
+        m_cDistortionCB->m_fLensCenter[0] = -l_hShift;
         driver->setMaterial(m_cRenderMaterial);
         driver->drawIndexedTriangleList(m_cPlaneVertices, 4, m_iPlaneIndices, 2);
 
