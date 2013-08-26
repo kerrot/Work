@@ -15,32 +15,6 @@ using namespace gui;
 
 bool enable = false;
 
-static const char* vertexShader =
-    "void main() {"
-    "  gl_Position = vec4(gl_Vertex.xy, 0.0, 1.0);"
-    "  gl_TexCoord[0].st = gl_MultiTexCoord0;"
-    "}";
-
-static const char *fragShader =
-    "uniform vec2 scale;"
-    "uniform vec2 scaleIn;"
-    "uniform vec2 lensCenter;"
-    "uniform vec4 hmdWarpParam;"
-    "uniform sampler2D texid;"
-    "void main()"
-    "{"
-    "  vec2 uv = (gl_TexCoord[0].st*2.0)-1.0;" // range from [0,1] to [-1,1]
-    "  vec2 theta = (uv-lensCenter)*scaleIn;"
-    "  float rSq = theta.x*theta.x + theta.y*theta.y;"
-    "  vec2 rvector = theta*(hmdWarpParam.x + hmdWarpParam.y*rSq + hmdWarpParam.z*rSq*rSq + hmdWarpParam.w*rSq*rSq*rSq);"
-    "  vec2 tc = (lensCenter + scale * rvector);"
-    "  tc = (tc+1.0)/2.0;" // range from [-1,1] to [0,1]
-    "  if (any(bvec2(clamp(tc, vec2(0.0,0.0), vec2(1.0,1.0))-tc)))"
-    "    gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);"
-    "  else"
-    "    gl_FragColor = texture2D(texid, tc);"
-    "}";
-
 IrrlichtDevice *device = 0;
 
 class MyEventReceiver : public IEventReceiver
@@ -213,13 +187,19 @@ int main()
     m_pLeftEye->setPosition(irr::core::vector3df( m_fEyeSeparation, 0.0f, 0.0f));
     m_pRghtEye->setPosition(irr::core::vector3df(-m_fEyeSeparation, 0.0f, 0.0f));
 
+    io::path vsFileName = "Resource/main.vert";
+    io::path psFileName = "Resource/main.frag";
 
     SMaterial m_cRenderMaterial;
     m_cRenderMaterial.Wireframe = false;
     m_cRenderMaterial.Lighting = false;
     m_cRenderMaterial.TextureLayer[0].TextureWrapU = irr::video::ETC_CLAMP;
     m_cRenderMaterial.TextureLayer[0].TextureWrapV = irr::video::ETC_CLAMP;
-    m_cRenderMaterial.MaterialType = (irr::video::E_MATERIAL_TYPE)gpu->addHighLevelShaderMaterial(vertexShader, "main", irr::video::EVST_VS_3_0, fragShader, "main", irr::video::EPST_PS_3_0, m_cDistortionCB);
+    m_cRenderMaterial.MaterialType = (irr::video::E_MATERIAL_TYPE)gpu->addHighLevelShaderMaterialFromFiles(
+        vsFileName, "main", irr::video::EVST_VS_3_0,
+        psFileName, "main", irr::video::EPST_PS_3_0,
+        m_cDistortionCB
+    );
     ITexture      *m_pRenderTexture = 0;
 
     m_cDistortionCB->drop();
@@ -281,6 +261,7 @@ int main()
         if(receiver.IsKeyDown(irr::KEY_ESCAPE))
         {
             device->closeDevice();
+            break;
         }
 
         irr::s32 l_iMouseX     = 640 - m_pCursor->getPosition().X;
@@ -308,9 +289,9 @@ int main()
         roll *= -irr::core::RADTODEG;
 
         m_pYaw  ->setRotation(lCamera->getRotation()); // irr::core::vector3df(        0, l_pCamera->getRotation().Y,   0));
-        m_pHeadY->setRotation(irr::core::vector3df(        0, yaw                       ,   0));
-        m_pHeadX->setRotation(irr::core::vector3df(      pitch,   0                       ,   0));
-        m_pHeadZ->setRotation(irr::core::vector3df(        0,   0                       , roll));
+        m_pHeadY->setRotation(irr::core::vector3df(     0, yaw,    0));
+        m_pHeadX->setRotation(irr::core::vector3df( pitch,   0,    0));
+        m_pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
 
         l_cMat.setRotationDegrees(m_pHeadZ->getAbsoluteTransformation().getRotationDegrees());
 
