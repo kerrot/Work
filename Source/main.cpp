@@ -121,7 +121,7 @@ int main()
 	IGPUProgrammingServices* gpu = driver->getGPUProgrammingServices();
 
 	device->getFileSystem()->addFileArchive("Resource/map-20kdm2.pk3");
-	scene::IAnimatedMesh* mesh = smgr->getMesh("Resource/20kdm2.bsp");
+	scene::IAnimatedMesh* mesh = smgr->getMesh("20kdm2.bsp");
 	scene::ISceneNode* node = 0;
 
 	if (mesh)
@@ -276,13 +276,18 @@ int main()
 
 	while(device->run())
 	{
+		if(receiver.IsKeyDown(irr::KEY_ESCAPE))
+        {
+            device->closeDevice();
+        }
+
 		irr::s32 l_iMouseX     = 640 - m_pCursor->getPosition().X;
 		irr::s32 l_iMouseY     = 400 - m_pCursor->getPosition().Y;
  
 		irr::core::vector3df l_vRot  = lCamera->getRotation();
 
 		m_pCursor->setPosition(640, 400);
-		
+
  		if (riftAvailable) 
  		{
  			OVR::Quatf l_cHmdOrient = riftFusion.GetOrientation();
