@@ -147,8 +147,8 @@ int main()
 
     RiftDistortionCallback* m_cDistortionCB = new RiftDistortionCallback();
 
-    f32 m_hShift = hmd.HScreenSize / 4.0f - hmd.LensSeparationDistance / 2.0f;
-    f32 l_hShift = 4.0f * m_hShift / hmd.HScreenSize;
+    f32 m_hShift     = hmd.HScreenSize / 4.0f - hmd.LensSeparationDistance / 2.0f;
+    f32 l_hShift     = 4.0f * m_hShift / hmd.HScreenSize;
     f32 l_fR         = -1.0f - l_hShift;
     f32 l_fDistScale =
         hmd.DistortionK[0] +
@@ -158,16 +158,15 @@ int main()
     f32 l_fAspect    = hmd.HResolution / (2.0f * hmd.VResolution);
     f32 l_fFov       = 2.0f * atan2(hmd.VScreenSize * l_fDistScale, 2.0f * hmd.EyeToScreenDistance);
 
-    matrix4 l_cCenterProjection = irr::core::matrix4().buildProjectionMatrixPerspectiveFovLH (l_fFov, l_fAspect, 1, 10000);
+    matrix4 l_cCenterProjection = matrix4().buildProjectionMatrixPerspectiveFovLH (l_fFov, l_fAspect, 1, 10000);
+    matrix4 m_cProjectionLeft = matrix4().setTranslation(irr::core::vector3df( l_hShift, 0.0, 0.0)) * l_cCenterProjection;
+    matrix4 m_cProjectionRght = matrix4().setTranslation(irr::core::vector3df(-l_hShift, 0.0, 0.0)) * l_cCenterProjection;
 
-    matrix4 m_cProjectionLeft = irr::core::matrix4().setTranslation(irr::core::vector3df( l_hShift, 0.0, 0.0)) * l_cCenterProjection;
-    matrix4 m_cProjectionRght = irr::core::matrix4().setTranslation(irr::core::vector3df(-l_hShift, 0.0, 0.0)) * l_cCenterProjection;
-
-    m_cDistortionCB->m_fScale[0] = 1.0f            / l_fDistScale;
-    m_cDistortionCB->m_fScale[1] = 1.0f * l_fAspect/ l_fDistScale;
-    m_cDistortionCB->m_fScaleIn[0] = 1.0f;
-    m_cDistortionCB->m_fScaleIn[1] = 1.0f / l_fAspect;
-    m_cDistortionCB->m_fLensCenter[1] = 0.0f;
+    m_cDistortionCB->m_fScale[0]        = 1.0f / l_fDistScale;
+    m_cDistortionCB->m_fScale[1]        = 1.0f * l_fAspect / l_fDistScale;
+    m_cDistortionCB->m_fScaleIn[0]      = 1.0f;
+    m_cDistortionCB->m_fScaleIn[1]      = 1.0f / l_fAspect;
+    m_cDistortionCB->m_fLensCenter[1]   = 0.0f;
     m_cDistortionCB->m_fHmdWarpParam[0] = hmd.DistortionK[0];
     m_cDistortionCB->m_fHmdWarpParam[1] = hmd.DistortionK[1];
     m_cDistortionCB->m_fHmdWarpParam[2] = hmd.DistortionK[2];
@@ -292,7 +291,7 @@ int main()
         yaw *= -irr::core::RADTODEG;
         roll *= -irr::core::RADTODEG;
 
-        m_pYaw  ->setRotation(lCamera->getRotation()); // irr::core::vector3df(        0, l_pCamera->getRotation().Y,   0));
+        m_pYaw  ->setRotation(lCamera->getRotation());
         m_pHeadY->setRotation(irr::core::vector3df(     0, yaw,    0));
         m_pHeadX->setRotation(irr::core::vector3df( pitch,   0,    0));
         m_pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
@@ -307,54 +306,45 @@ int main()
         l_cMat.transformVect(vUp  );
 
         lCamera->setTarget  (lCamera->getPosition() + vFore);
-        lCamera->setUpVector(                           vUp  );
+        lCamera->setUpVector(                         vUp  );
         
-//      vector3df position = camera->getPosition();
-//      vector3df target = camera->getTarget();
-
-        //camera->get
-
         driver->beginScene(true, true, SColor(0,100,100,100));
         
+        
         smgr->setActiveCamera(rCamera);
-        driver->setRenderTarget(m_pRenderTexture, true, true, irr::video::SColor(0,0,0,0));
-        
-        
 
+        /* render what left eye sees to a plane */
         rCamera->setPosition(lCamera->getPosition() + m_pLeftEye->getAbsolutePosition());
-        rCamera->setTarget  (lCamera->getTarget  () + m_pLeftEye->getAbsolutePosition());//getTarget  () + l_vTx);
+        rCamera->setTarget  (lCamera->getTarget  () + m_pLeftEye->getAbsolutePosition());
         rCamera->setUpVector(lCamera->getUpVector());
-        
         rCamera->setProjectionMatrix(m_cProjectionLeft);
-//      camera->setPosition(position + m_pLeftEye->getAbsolutePosition());
-//      camera->setTarget  (target + m_pLeftEye->getAbsolutePosition());
 
+        driver->setRenderTarget(m_pRenderTexture, true, true, irr::video::SColor(0,0,0,0));
         smgr->drawAll();
         driver->setRenderTarget(0, false, false, irr::video::SColor(0,100,100,100));
         
-        driver->setViewPort(rect<s32>(0,0,640,800));
+        /* render the plane to the screen with shader */
+        /* no projection here */
         driver->setTransform(video::ETS_VIEW, core::matrix4());
         driver->setTransform(video::ETS_WORLD, core::matrix4());
         driver->setTransform(video::ETS_PROJECTION, core::matrix4());
+        
+        driver->setViewPort(rect<s32>(0, 0, 640, 800));
         m_cDistortionCB->m_fLensCenter[0] = l_hShift;
         driver->setMaterial(m_cRenderMaterial);
         driver->drawIndexedTriangleList(m_cPlaneVertices, 4, m_iPlaneIndices, 2);
 
-        driver->setRenderTarget(m_pRenderTexture, true, true, irr::video::SColor(0,0,0,0));
-
-        //smgr->setActiveCamera(rCamera);
-        
+        /* now render what right eye sees */
         rCamera->setPosition(lCamera->getPosition() + m_pRghtEye->getAbsolutePosition());
-        rCamera->setTarget  (lCamera->getTarget  () + m_pRghtEye->getAbsolutePosition());//getTarget  () + l_vTx);
+        rCamera->setTarget  (lCamera->getTarget  () + m_pRghtEye->getAbsolutePosition());
         rCamera->setUpVector(lCamera->getUpVector());
-        
         rCamera->setProjectionMatrix(m_cProjectionRght);
-//      camera->setPosition(position + m_pRghtEye->getAbsolutePosition());
-//      camera->setTarget  (target + m_pRghtEye->getAbsolutePosition());
         
+        driver->setRenderTarget(m_pRenderTexture, true, true, irr::video::SColor(0,0,0,0));
         smgr->drawAll();
         driver->setRenderTarget(0, false, false, irr::video::SColor(0,100,100,100));
  
+        /* render the plane to the screen */
         driver->setTransform(video::ETS_VIEW, core::matrix4());
         driver->setTransform(video::ETS_WORLD, core::matrix4());
         driver->setTransform(video::ETS_PROJECTION, core::matrix4());
@@ -364,25 +354,11 @@ int main()
         driver->setMaterial(m_cRenderMaterial);
         driver->drawIndexedTriangleList(m_cPlaneVertices, 4, m_iPlaneIndices, 2);
 
-//      camera->setPosition(position);
-//      camera->setTarget  (target);
 
         driver->endScene();
     }
 
     device->drop();
-
-//      if (pHMD)
-//      {
-//          pHMD->Release();
-//      }
-//      if (pManager)
-//      {
-//          pManager->Release();
-//          pManager = 0;
-//      }
-// 
-//      OVR::System::Destroy();
 
     return 0;
 }
