@@ -5,15 +5,9 @@ set (CMAKE_BUILD_TYPE "Debug")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   if (MSVC)
-    if (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "x86")
-      set (IRRLICHT_SYSTEM_NAME "Win32-VisualStudio")
-      set (OCULUS_SDK_SYSTEM_NAME "Win32")
-      set (LEAP_SDK_SYSTEM_NAME "x86")
-    elseif (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "AMD64")
-      set (IRRLICHT_SYSTEM_NAME "Win64-VisualStudio")
-      set (OCULUS_SDK_SYSTEM_NAME "x64")
-      set (LEAP_SDK_SYSTEM_NAME "x64")
-    endif ()
+    set (IRRLICHT_SYSTEM_NAME "Win32-VisualStudio")
+    set (OCULUS_SDK_SYSTEM_NAME "Win32")
+    set (LEAP_SDK_SYSTEM_NAME "x86")
   else ()
     set (IRRLICHT_SYSTEM_NAME "Win32-gcc")
     set (OCULUS_SDK_SYSTEM_NAME "Win32")
@@ -50,7 +44,7 @@ find_library (
 find_library (
   LEAP_SDK_LIB
   NAMES Leap Leapd
-  HINTS "${LEAP_SDK_LIB_DIR}"
+  HINTS "${LEAP_LIB_DIR}"
 )
 
 include_directories (
@@ -64,12 +58,7 @@ link_directories ("${IRRLICHT_LIB_DIR}" "${OCULUS_SDK_LIB_DIR}" "${LEAP_LIB_DIR}
 add_executable (test ${CMAKE_SOURCE_DIR}/Source/main.cpp)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  if (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "x86")
-      target_link_libraries (test Irrlicht libovr Leapd Winmm)
-  elseif (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "AMD64")
-      target_link_libraries (test Irrlicht libovr64 Leapd Winmm)
-  endif ()
-
+  target_link_libraries (test Irrlicht libovr Leapd Winmm)
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   target_link_libraries (test Irrlicht GL X11 Xxf86vm ovr pthread udev Xinerama)
 endif ()
@@ -82,7 +71,10 @@ install (
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   install (
 	  FILES "${CMAKE_SOURCE_DIR}/ThirdParty/irrlicht-1.8/bin/${IRRLICHT_SYSTEM_NAME}/Irrlicht.dll"
-          FILES "${CMAKE_SOURCE_DIR}/ThirdParty/LeapSDK/lib/${LEAP_SYSTEM_NAME}/Leapd.dll"
+    DESTINATION ${CMAKE_BINARY_DIR}
+  )
+  install (
+	  FILES "${CMAKE_SOURCE_DIR}/ThirdParty/LeapSDK/lib/${LEAP_SDK_SYSTEM_NAME}/Leapd.dll"
     DESTINATION ${CMAKE_BINARY_DIR}
   )
 endif ()
