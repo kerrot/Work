@@ -151,12 +151,13 @@ public:
 
 int main()
 {
+    dimension2d<u32> resolution(1280, 800);
     MyEventReceiver receiver;
     StereoConfig SConfig;
 
     device = createDevice(
         video::EDT_OPENGL,
-        dimension2d<u32>(1280, 800), 16,
+        resolution, 16,
         true, false, false, &receiver
     );
 
@@ -201,36 +202,14 @@ int main()
 
         pHMD->GetDeviceInfo(&hmd);
     }
-    else
-    {
-        hmd.HResolution = 1280;
-        hmd.VResolution = 800;
-        hmd.HScreenSize = 0.14976f;
-        hmd.VScreenSize= 0.0936f;
-        hmd.InterpupillaryDistance = 0.064f;
-        hmd.LensSeparationDistance = 0.064f;
-        hmd.EyeToScreenDistance = 0.041f;
-        hmd.DistortionK[0] = 1.0f;
-        hmd.DistortionK[1] = 0.22f;
-        hmd.DistortionK[2] = 0.24f;
-        hmd.DistortionK[3] = 0.0f;
-    }
 
-    SConfig.SetHMDInfo(hmd);
-    SConfig.SetFullViewport(Viewport(0, 0, 1280, 800));
+    SConfig.SetHMDInfo(hmd); // there is a default hmd info in StereoConfig
+    SConfig.SetFullViewport(Viewport(0, 0, resolution.Width, resolution.Height));
 
     RiftDistortionCallback* m_cDistortionCB = new RiftDistortionCallback();
 
-    f32 m_hShift     = hmd.HScreenSize / 4.0f - hmd.LensSeparationDistance / 2.0f;
-    f32 l_hShift     = 4.0f * m_hShift / hmd.HScreenSize;
-    f32 l_fR         = -1.0f - l_hShift;
-    f32 l_fDistScale =
-        hmd.DistortionK[0] +
-        hmd.DistortionK[1] * pow(l_fR,2) +
-        hmd.DistortionK[2] * pow(l_fR,4) +
-        hmd.DistortionK[3] * pow(l_fR,6);
-    f32 l_fAspect    = hmd.HResolution / (2.0f * hmd.VResolution);
-    f32 l_fFov       = 2.0f * atan2(hmd.VScreenSize * l_fDistScale, 2.0f * hmd.EyeToScreenDistance);
+    f32 l_fDistScale = SConfig.GetDistortionScale();
+    f32 l_fAspect    = SConfig.GetAspect();
 
     m_cDistortionCB->m_fScale[0]        = 1.0f / l_fDistScale;
     m_cDistortionCB->m_fScale[1]        = 1.0f * l_fAspect / l_fDistScale;
@@ -323,7 +302,7 @@ int main()
 
     ICursorControl * m_pCursor = device->getCursorControl();
 
-    position2di lastCursorPos(640, 400);
+    position2di lastCursorPos(resolution.Width / 2, resolution.Height / 2);
     
     float pitch = 0, yaw = 0, roll = 0;
 
@@ -337,12 +316,12 @@ int main()
             break;
         }
 
-        irr::s32 l_iMouseX     = 640 - m_pCursor->getPosition().X;
-        irr::s32 l_iMouseY     = 400 - m_pCursor->getPosition().Y;
+        irr::s32 l_iMouseX     = lastCursorPos.X - m_pCursor->getPosition().X;
+        irr::s32 l_iMouseY     = lastCursorPos.Y - m_pCursor->getPosition().Y;
  
         irr::core::vector3df l_vRot  = lCamera->getRotation();
 
-        m_pCursor->setPosition(640, 400);
+        m_pCursor->setPosition(lastCursorPos.X, lastCursorPos.Y);
 
          if (riftAvailable) 
          {
@@ -403,8 +382,8 @@ int main()
         driver->setTransform(video::ETS_WORLD, core::matrix4());
         driver->setTransform(video::ETS_PROJECTION, core::matrix4());
         
-        driver->setViewPort(rect<s32>(0, 0, 640, 800));
-        m_cDistortionCB->m_fLensCenter[0] = l_hShift;
+        driver->setViewPort(rect<s32>(0, 0, resolution.Width / 2, resolution.Height));
+        m_cDistortionCB->m_fLensCenter[0] = SConfig.GetProjectionCenterOffset();
         driver->setMaterial(m_cRenderMaterial);
         driver->drawIndexedTriangleList(m_cPlaneVertices, 4, m_iPlaneIndices, 2);
 
@@ -427,8 +406,8 @@ int main()
         driver->setTransform(video::ETS_WORLD, core::matrix4());
         driver->setTransform(video::ETS_PROJECTION, core::matrix4());
  
-        driver->setViewPort(rect<s32>(640,0,1280,800));
-        m_cDistortionCB->m_fLensCenter[0] = -l_hShift;
+        driver->setViewPort(rect<s32>(resolution.Width / 2, 0, resolution.Width, resolution.Height));
+        m_cDistortionCB->m_fLensCenter[0] = -SConfig.GetProjectionCenterOffset();
         driver->setMaterial(m_cRenderMaterial);
         driver->drawIndexedTriangleList(m_cPlaneVertices, 4, m_iPlaneIndices, 2);
 
