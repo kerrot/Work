@@ -17,6 +17,76 @@ bool enable = false;
 
 IrrlichtDevice *device = 0;
 
+void matrix4f_print(Matrix4f m) {
+    printf(
+        "{\n"
+        "  % 08f,% 08f,% 08f,% 08f\n"
+        "  % 08f,% 08f,% 08f,% 08f\n"
+        "  % 08f,% 08f,% 08f,% 08f\n"
+        "  % 08f,% 08f,% 08f,% 08f\n"
+        "}\n",
+        m.M[0][0], m.M[0][1], m.M[0][2], m.M[0][3],
+        m.M[1][0], m.M[1][1], m.M[1][2], m.M[1][3],
+        m.M[2][0], m.M[2][1], m.M[2][2], m.M[2][3],
+        m.M[3][0], m.M[3][1], m.M[3][2], m.M[3][3]
+    );
+    return;
+}
+
+void matrix4_print(matrix4 m) {
+    printf(
+        "{\n"
+        "  % 08f,% 08f,% 08f,% 08f\n"
+        "  % 08f,% 08f,% 08f,% 08f\n"
+        "  % 08f,% 08f,% 08f,% 08f\n"
+        "  % 08f,% 08f,% 08f,% 08f\n"
+        "}\n",
+        m[0], m[4], m[8], m[12],
+        m[1], m[5], m[9], m[13],
+        m[2], m[6], m[10], m[14],
+        m[3], m[7], m[11], m[15]
+    );
+    return;
+}
+
+Matrix4f matrix4f_from_matrix4(matrix4 m) {
+    return Matrix4f(
+        m[0], m[4], m[8], m[12],
+        m[1], m[5], m[9], m[13],
+        m[2], m[6], m[10], m[14],
+        m[3], m[7], m[11], m[15]
+    );
+}
+
+matrix4 matrix4_from_matrix4f(Matrix4f m) {
+    matrix4 ret;
+    ret[0] = m.M[0][0];
+    ret[1] = m.M[1][0];
+    ret[2] = m.M[2][0];
+    ret[3] = m.M[3][0];
+    ret[4] = m.M[0][1];
+    ret[5] = m.M[1][1];
+    ret[6] = m.M[2][1];
+    ret[7] = m.M[3][1];
+    ret[8] = m.M[0][2];
+    ret[9] = m.M[1][2];
+    ret[10] = m.M[2][2];
+    ret[11] = m.M[3][2];
+    ret[12] = m.M[0][3];
+    ret[13] = m.M[1][3];
+    ret[14] = m.M[2][3];
+    ret[15] = m.M[3][3];
+    return ret;
+}
+
+void matrix4_another_handed(matrix4 &m) {
+    m[8] = -m[8];
+    m[9] = -m[9];
+    m[10] = -m[10];
+    m[11] = -m[11];
+    return;
+}
+
 class MyEventReceiver : public IEventReceiver
 {
 public:
@@ -82,6 +152,7 @@ public:
 int main()
 {
     MyEventReceiver receiver;
+    StereoConfig SConfig;
 
     device = createDevice(
         video::EDT_OPENGL,
@@ -145,6 +216,9 @@ int main()
         hmd.DistortionK[3] = 0.0f;
     }
 
+    SConfig.SetHMDInfo(hmd);
+    SConfig.SetFullViewport(Viewport(0, 0, 1280, 800));
+
     RiftDistortionCallback* m_cDistortionCB = new RiftDistortionCallback();
 
     f32 m_hShift     = hmd.HScreenSize / 4.0f - hmd.LensSeparationDistance / 2.0f;
@@ -157,10 +231,6 @@ int main()
         hmd.DistortionK[3] * pow(l_fR,6);
     f32 l_fAspect    = hmd.HResolution / (2.0f * hmd.VResolution);
     f32 l_fFov       = 2.0f * atan2(hmd.VScreenSize * l_fDistScale, 2.0f * hmd.EyeToScreenDistance);
-
-    matrix4 l_cCenterProjection = matrix4().buildProjectionMatrixPerspectiveFovLH (l_fFov, l_fAspect, 1, 10000);
-    matrix4 m_cProjectionLeft = matrix4().setTranslation(irr::core::vector3df( l_hShift, 0.0, 0.0)) * l_cCenterProjection;
-    matrix4 m_cProjectionRght = matrix4().setTranslation(irr::core::vector3df(-l_hShift, 0.0, 0.0)) * l_cCenterProjection;
 
     m_cDistortionCB->m_fScale[0]        = 1.0f / l_fDistScale;
     m_cDistortionCB->m_fScale[1]        = 1.0f * l_fAspect / l_fDistScale;
@@ -285,7 +355,7 @@ int main()
         }
         matrix4 l_cMat;
 
-        printf("P: %f, Y: %f, R: %f\n", pitch, yaw, roll);
+        //printf("P: %f, Y: %f, R: %f\n", pitch, yaw, roll);
 
         pitch *=  irr::core::RADTODEG;
         yaw *= -irr::core::RADTODEG;
@@ -314,10 +384,14 @@ int main()
         smgr->setActiveCamera(rCamera);
 
         /* render what left eye sees to a plane */
+        StereoEyeParams params_left = SConfig.GetEyeRenderParams(StereoEye_Left);
+        matrix4 m_left = matrix4_from_matrix4f(params_left.Projection * params_left.ViewAdjust);
+        matrix4_another_handed(m_left);
+
         rCamera->setPosition(lCamera->getPosition() + m_pLeftEye->getAbsolutePosition());
         rCamera->setTarget  (lCamera->getTarget  () + m_pLeftEye->getAbsolutePosition());
         rCamera->setUpVector(lCamera->getUpVector());
-        rCamera->setProjectionMatrix(m_cProjectionLeft);
+        rCamera->setProjectionMatrix(m_left);
 
         driver->setRenderTarget(m_pRenderTexture, true, true, irr::video::SColor(0,0,0,0));
         smgr->drawAll();
@@ -335,10 +409,14 @@ int main()
         driver->drawIndexedTriangleList(m_cPlaneVertices, 4, m_iPlaneIndices, 2);
 
         /* now render what right eye sees */
+        StereoEyeParams params_right = SConfig.GetEyeRenderParams(StereoEye_Right);
+        matrix4 m_right = matrix4_from_matrix4f(params_right.Projection * params_left.ViewAdjust);
+        matrix4_another_handed(m_right);
+
         rCamera->setPosition(lCamera->getPosition() + m_pRghtEye->getAbsolutePosition());
         rCamera->setTarget  (lCamera->getTarget  () + m_pRghtEye->getAbsolutePosition());
         rCamera->setUpVector(lCamera->getUpVector());
-        rCamera->setProjectionMatrix(m_cProjectionRght);
+        rCamera->setProjectionMatrix(m_right);
         
         driver->setRenderTarget(m_pRenderTexture, true, true, irr::video::SColor(0,0,0,0));
         smgr->drawAll();
