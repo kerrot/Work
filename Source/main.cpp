@@ -224,20 +224,16 @@ int main()
     ISceneNode *m_pHeadX,
                *m_pHeadY,
                *m_pHeadZ,
-               *m_pHead,
                *m_pYaw,
                *m_pLeftEye,
                *m_pRghtEye;
 
     m_pYaw   = smgr->addEmptySceneNode(0, 0);
-    m_pHead  = smgr->addEmptySceneNode(m_pYaw, 0);
-    /*
     m_pHeadX = smgr->addEmptySceneNode(m_pYaw  , 0);
     m_pHeadY = smgr->addEmptySceneNode(m_pHeadX, 0);
     m_pHeadZ = smgr->addEmptySceneNode(m_pHeadY, 0);
-    */
-    m_pLeftEye = smgr->addEmptySceneNode(m_pHead, 0);
-    m_pRghtEye = smgr->addEmptySceneNode(m_pHead, 0); 
+    m_pLeftEye = smgr->addEmptySceneNode(m_pHeadZ, 0);
+    m_pRghtEye = smgr->addEmptySceneNode(m_pHeadZ, 0); 
 
     f32 m_fEyeSeparation = hmd.InterpupillaryDistance/2.0f;
     m_pLeftEye->setPosition(irr::core::vector3df( m_fEyeSeparation, 0.0f, 0.0f));
@@ -345,11 +341,11 @@ int main()
         roll *= -irr::core::RADTODEG;
 
         m_pYaw  ->setRotation(lCamera->getRotation());
-        m_pHead->setRotation(irr::core::vector3df( pitch, yaw, roll));
-        //m_pHeadX->setRotation(irr::core::vector3df( pitch,   0,    0));
-        //m_pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
+        m_pHeadY->setRotation(irr::core::vector3df(     0, yaw,    0));
+        m_pHeadX->setRotation(irr::core::vector3df( pitch,   0,    0));
+        m_pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
 
-        l_cMat.setRotationDegrees(m_pHead->getAbsoluteTransformation().getRotationDegrees());
+        l_cMat.setRotationDegrees(m_pHeadZ->getAbsoluteTransformation().getRotationDegrees());
 
 
         vector3df vFore = irr::core::vector3df(0, 0, -1),
