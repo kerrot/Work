@@ -365,6 +365,9 @@ int main()
         /* render what left eye sees to a plane */
         StereoEyeParams params_left = SConfig.GetEyeRenderParams(StereoEye_Left);
         matrix4 m_left = matrix4_from_matrix4f(params_left.Projection * params_left.ViewAdjust);
+        // z near, z far correction
+        m_left[10] = 10000.0 / -9999.0;
+        m_left[14] = 10000.0 / -9999.0; 
         matrix4_another_handed(m_left);
 
         rCamera->setPosition(lCamera->getPosition() + m_pLeftEye->getAbsolutePosition());
@@ -390,6 +393,8 @@ int main()
         /* now render what right eye sees */
         StereoEyeParams params_right = SConfig.GetEyeRenderParams(StereoEye_Right);
         matrix4 m_right = matrix4_from_matrix4f(params_right.Projection * params_left.ViewAdjust);
+        m_right[10] = 10000.0 / -9999.0;
+        m_right[14] = 10000.0 / -9999.0; 
         matrix4_another_handed(m_right);
 
         rCamera->setPosition(lCamera->getPosition() + m_pRghtEye->getAbsolutePosition());
