@@ -157,8 +157,11 @@ COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
     PlaneIndices[5] = 3;
 
     pHead = smgr->addEmptySceneNode(0, 0);
-    pEyeLeft = smgr->addEmptySceneNode(pHead, 0);
-    pEyeRight = smgr->addEmptySceneNode(pHead, 0);
+    pHeadX = smgr->addEmptySceneNode(pHead, 0);
+    pHeadY = smgr->addEmptySceneNode(pHeadX, 0);
+    pHeadZ = smgr->addEmptySceneNode(pHeadY, 0);
+    pEyeLeft = smgr->addEmptySceneNode(pHeadZ, 0);
+    pEyeRight = smgr->addEmptySceneNode(pHeadZ, 0);
     pCamera = smgr->addCameraSceneNode();
     smgr->setActiveCamera(0);
 
@@ -182,6 +185,24 @@ void COVRSceneManagerDecorator::drawAll()
     ICameraSceneNode *pRealCamera = SceneManager->getActiveCamera();
     if (!pRealCamera) return;
 
+    f32 pitch = 0,
+        yaw = 0,
+        roll = 0;
+
+    if (HMDManager->EnumerateDevices<OVR::HMDDevice>().IsAvailable()) {
+        Fusion.GetOrientation().GetEulerAngles<OVR::Axis_X, OVR::Axis_Y, OVR::Axis_Z>(&pitch, &yaw, &roll);
+    }
+
+    pitch *= core::RADTODEG;
+    yaw *= -core::RADTODEG;
+    roll *= -core::RADTODEG;
+
+    pHead->setRotation(pRealCamera->getRotation());
+    pHeadX->setRotation(irr::core::vector3df( pitch,   0,    0));
+    pHeadY->setRotation(irr::core::vector3df(     0, yaw,    0));
+    pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
+
+    // render
     SceneManager->setActiveCamera(pCamera);
 
     const StereoEyeParams *params;

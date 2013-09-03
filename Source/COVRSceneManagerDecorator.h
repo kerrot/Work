@@ -63,6 +63,9 @@ namespace scene
         u16 PlaneIndices[6];
 
         ISceneNode *pHead;
+        ISceneNode *pHeadX;
+        ISceneNode *pHeadY;
+        ISceneNode *pHeadZ;
         ISceneNode *pEyeLeft;
         ISceneNode *pEyeRight;
         ICameraSceneNode *pCamera;
