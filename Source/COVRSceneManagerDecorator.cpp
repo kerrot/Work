@@ -185,6 +185,9 @@ void COVRSceneManagerDecorator::drawAll()
     ICameraSceneNode *pRealCamera = SceneManager->getActiveCamera();
     if (!pRealCamera) return;
 
+    core::matrix4 matrix;
+    core::vector3df vFore = irr::core::vector3df(0, 0, -1),
+                    vUp   = irr::core::vector3df(0, 1,  0);
     f32 pitch = 0,
         yaw = 0,
         roll = 0;
@@ -202,11 +205,17 @@ void COVRSceneManagerDecorator::drawAll()
     pHeadY->setRotation(irr::core::vector3df(     0, yaw,    0));
     pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
 
+    matrix.setRotationDegrees(pHeadZ->getAbsoluteTransformation().getRotationDegrees());
+    matrix.transformVect(vFore);
+    matrix.transformVect(vUp  );
+
+    pRealCamera->setTarget  (pRealCamera->getPosition() + vFore);
+    pRealCamera->setUpVector(                             vUp  );
+
     // render
     SceneManager->setActiveCamera(pCamera);
 
     const StereoEyeParams *params;
-    core::matrix4 matrix;
 
     // leat eye
     params = &SConfig.GetEyeRenderParams(StereoEye_Left);
