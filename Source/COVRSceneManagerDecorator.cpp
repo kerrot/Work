@@ -208,7 +208,7 @@ void COVRSceneManagerDecorator::drawAll()
     yaw *= -core::RADTODEG;
     roll *= core::RADTODEG;
 
-    pHead->setRotation(pRealCamera->getRotation());
+    pHead->setPosition(pRealCamera->getPosition());
     pHeadX->setRotation(irr::core::vector3df( pitch,   0,    0));
     pHeadY->setRotation(irr::core::vector3df(     0, yaw,    0));
     pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
@@ -235,8 +235,8 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = ZFar * ZNear / (ZNear - ZFar);
     matrix4_another_handed(matrix);
 
-    pCamera->setPosition(         pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
-    pCamera->setTarget  (target + pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
+    pCamera->setPosition(         pEyeLeft->getAbsolutePosition());
+    pCamera->setTarget  (target + pEyeLeft->getAbsolutePosition());
     pCamera->setUpVector(up);
     pCamera->setProjectionMatrix(matrix);
 
@@ -267,8 +267,8 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = ZFar * ZNear / (ZNear - ZFar);
     matrix4_another_handed(matrix);
 
-    pCamera->setPosition(         pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
-    pCamera->setTarget  (target + pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
+    pCamera->setPosition(         pEyeRight->getAbsolutePosition());
+    pCamera->setTarget  (target + pEyeRight->getAbsolutePosition());
     pCamera->setUpVector(up);
     pCamera->setProjectionMatrix(matrix);
 
