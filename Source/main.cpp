@@ -89,7 +89,7 @@ int main()
         }
     }
     
-    ICameraSceneNode* Camera = smgr->addCameraSceneNode();
+    ICameraSceneNode* Camera = smgr->addCameraSceneNodeFPS();
     
     while(device->run())
     {

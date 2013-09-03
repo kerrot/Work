@@ -186,8 +186,8 @@ void COVRSceneManagerDecorator::drawAll()
     if (!pRealCamera) return;
 
     core::matrix4 matrix;
-    core::vector3df vFore = irr::core::vector3df(0, 0, -1),
-                    vUp   = irr::core::vector3df(0, 1,  0);
+    core::vector3df vFore = pRealCamera->getTarget(),
+                    vUp   = pRealCamera->getUpVector();
     f32 pitch = 0,
         yaw = 0,
         roll = 0;
@@ -209,9 +209,6 @@ void COVRSceneManagerDecorator::drawAll()
     matrix.transformVect(vFore);
     matrix.transformVect(vUp  );
 
-    pRealCamera->setTarget  (pRealCamera->getPosition() + vFore);
-    pRealCamera->setUpVector(                             vUp  );
-
     // render
     SceneManager->setActiveCamera(pCamera);
 
@@ -224,9 +221,9 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = ZFar * ZNear / (ZNear - ZFar);
     matrix4_another_handed(matrix);
 
-    pCamera->setPosition(pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
-    pCamera->setTarget  (pRealCamera->getTarget  () + pEyeLeft->getAbsolutePosition());
-    pCamera->setUpVector(pRealCamera->getUpVector());
+    pCamera->setPosition(        pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
+    pCamera->setTarget  (vFore + pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
+    pCamera->setUpVector(vUp);
     pCamera->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
