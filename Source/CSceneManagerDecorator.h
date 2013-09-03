@@ -5,32 +5,8 @@
 
 namespace irr
 {
-
-namespace io
-{
-    class IFileSystem;
-}
-
-namespace gui
-{
-    class IGUIEnvironment;
-}
-
-namespace video
-{
-    class IVideoDriver;
-}
-
 namespace scene
 {
-
-    class IAnimatedMesh;
-    class IMeshCache;
-    class IVolumeLightSceneNode;
-    class IMeshSceneNode;
-    class IAnimatedMeshSceneNode;
-    class IMeshSceneNode;
-
     class CSceneManagerDecorator : public ISceneManager
     {
     public:
@@ -859,6 +835,6 @@ namespace scene
 
     };
 
-}
-}
+} // end of namespace scene
+} // end of namespace irr
 #endif
