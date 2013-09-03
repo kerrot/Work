@@ -196,7 +196,7 @@ void COVRSceneManagerDecorator::drawAll()
         Fusion.GetOrientation().GetEulerAngles<OVR::Axis_X, OVR::Axis_Y, OVR::Axis_Z>(&pitch, &yaw, &roll);
     }
 
-    pitch *= core::RADTODEG;
+    pitch *= -core::RADTODEG;
     yaw *= -core::RADTODEG;
     roll *= -core::RADTODEG;
 
