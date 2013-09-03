@@ -217,8 +217,11 @@ void COVRSceneManagerDecorator::drawAll()
     matrix.transformVect(target);
     matrix.transformVect(up);
 
-    // update animators
+    // draw nothing, only update animators
+    f32 far = pRealCamera->getFarValue();
+    pRealCamera->setFarValue(pRealCamera->getNearValue() + .1f);
     CSceneManagerDecorator::drawAll();
+    pRealCamera->setFarValue(far);
 
     // render
     CSceneManagerDecorator::setActiveCamera(pCamera);
