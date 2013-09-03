@@ -85,7 +85,7 @@ namespace scene
 
 COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
     :CSceneManagerDecorator(smgr), ZNear(1.0f), ZFar(10000.0f),
-    vTarget(core::vector3df(0.0f, 0.0f, 1.0f)), vUp(core::vector3df(0.0f, 1.0f, 0.0f))
+    vTarget(core::vector3df(0.0f, 0.0f, 0.0f)), vUp(core::vector3df(0.0f, 0.0f, 0.0f))
 {
     #ifdef _DEBUG
     setDebugName("COVRSceneManagerDecorator");
@@ -208,7 +208,12 @@ void COVRSceneManagerDecorator::drawAll()
     yaw *= -core::RADTODEG;
     roll *= core::RADTODEG;
 
-    pHead->setPosition(pRealCamera->getPosition());
+    // if setActiveCamera is invoked from the inside of the decorator
+    if (pRealCamera != pHead->getParent()) {
+        vTarget = pRealCamera->getTarget();
+        vUp = pRealCamera->getUpVector();
+        pRealCamera->addChild(pHead);
+    }
     pHeadX->setRotation(irr::core::vector3df( pitch,   0,    0));
     pHeadY->setRotation(irr::core::vector3df(     0, yaw,    0));
     pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
@@ -216,6 +221,9 @@ void COVRSceneManagerDecorator::drawAll()
     matrix.setRotationDegrees(pHeadZ->getAbsoluteTransformation().getRotationDegrees());
     matrix.transformVect(target);
     matrix.transformVect(up);
+
+    //bind camera target to HMD
+    //pRealCamera->setRotation(pRealCamera->getRotation() + target);
 
     // draw nothing, only update animators
     f32 z = pRealCamera->getFarValue();
@@ -319,6 +327,7 @@ void COVRSceneManagerDecorator::setActiveCamera(ICameraSceneNode *camera)
     vUp = camera->getUpVector();
 
     pRealCamera = camera;
+    pRealCamera->addChild(pHead);
 
     CSceneManagerDecorator::setActiveCamera(camera);
 }
