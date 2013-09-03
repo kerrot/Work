@@ -72,8 +72,9 @@ int main()
     if (!device) return 1;
 
     IVideoDriver* driver = device->getVideoDriver();
-    ISceneManager* smgr = new COVRSceneManagerDecorator(device->getSceneManager());
-    //ISceneManager* smgrd = new CSceneManagerDecorator(*smgr);
+    ISceneManager* smgr = device->getSceneManager();
+    //smgr = new CSceneManagerDecorator(smgr);
+    smgr = new COVRSceneManagerDecorator(smgr);
     IGUIEnvironment* guienv = device->getGUIEnvironment();
 
     device->getFileSystem()->addFileArchive("Resource/map-20kdm2.pk3");
@@ -89,8 +90,33 @@ int main()
         }
     }
     
-    ICameraSceneNode* Camera = smgr->addCameraSceneNode();
-    
+    SKeyMap keyMap[9];
+    keyMap[0].Action = EKA_MOVE_FORWARD;
+    keyMap[0].KeyCode = KEY_UP;
+    keyMap[1].Action = EKA_MOVE_FORWARD;
+    keyMap[1].KeyCode = KEY_KEY_W;
+
+    keyMap[2].Action = EKA_MOVE_BACKWARD;
+    keyMap[2].KeyCode = KEY_DOWN;
+    keyMap[3].Action = EKA_MOVE_BACKWARD;
+    keyMap[3].KeyCode = KEY_KEY_S;
+
+    keyMap[4].Action = EKA_STRAFE_LEFT;
+    keyMap[4].KeyCode = KEY_LEFT;
+    keyMap[5].Action = EKA_STRAFE_LEFT;
+    keyMap[5].KeyCode = KEY_KEY_A;
+
+    keyMap[6].Action = EKA_STRAFE_RIGHT;
+    keyMap[6].KeyCode = KEY_RIGHT;
+    keyMap[7].Action = EKA_STRAFE_RIGHT;
+    keyMap[7].KeyCode = KEY_KEY_D;
+
+    keyMap[8].Action = EKA_JUMP_UP;
+    keyMap[8].KeyCode = KEY_KEY_J;
+
+    ICameraSceneNode* Camera = smgr->addCameraSceneNodeFPS(0, 100.0f, .4f, -1, keyMap, 9, false, 3.f);
+    ISceneNode* Head = smgr->addSphereSceneNode(5.0f, 16, Camera, -1, vector3df(0, 0, 20.0f));
+
     while(device->run())
     {
         if(receiver.IsKeyDown(irr::KEY_ESCAPE))

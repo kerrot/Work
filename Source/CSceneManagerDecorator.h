@@ -7,11 +7,11 @@ namespace irr
 {
 namespace scene
 {
-    class CSceneManagerDecorator : public ISceneManager
+    class CSceneManagerDecorator : public ISceneManager, protected ISceneNode
     {
     public:
 
-        CSceneManagerDecorator(ISceneManager* smgr):SceneManager(smgr) { SceneManager->grab(); }
+        CSceneManagerDecorator(ISceneManager* smgr):ISceneNode(0, 0), SceneManager(smgr) { SceneManager->grab(); }
 
         ~CSceneManagerDecorator() { SceneManager->drop(); }
 
@@ -827,6 +827,15 @@ namespace scene
         virtual bool isCulled(const ISceneNode* node) const
         {
             return SceneManager->isCulled(node);
+        }
+
+        // SceneNode methods
+        virtual void render() {}
+
+        virtual const core::aabbox3d<f32>& getBoundingBox() const
+        {
+            _IRR_DEBUG_BREAK_IF(true)
+            return *((core::aabbox3d<f32>*)0);
         }
 
     protected:

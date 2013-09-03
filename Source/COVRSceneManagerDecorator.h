@@ -44,6 +44,19 @@ namespace scene
 
         virtual void drawAll();
 
+        /*
+        virtual ICameraSceneNode* addCameraSceneNode(ISceneNode* parent = 0,
+            const core::vector3df& position = core::vector3df(0,0,0),
+            const core::vector3df& lookat = core::vector3df(0,0,100),
+            s32 id=-1, bool makeActive=true);
+        */
+
+        virtual void setActiveCamera(ICameraSceneNode* camera);
+        
+        virtual ICameraSceneNode* getActiveCamera() const;
+
+        //virtual bool postEventFromUser(const SEvent& event);
+
     protected:
 
         f32 ZNear;
@@ -68,6 +81,7 @@ namespace scene
         ISceneNode *pHeadZ;
         ISceneNode *pEyeLeft;
         ISceneNode *pEyeRight;
+        ICameraSceneNode *pRealCamera;
         ICameraSceneNode *pCamera;
 
     };

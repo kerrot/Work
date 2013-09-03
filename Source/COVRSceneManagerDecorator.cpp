@@ -174,7 +174,14 @@ COVRSceneManagerDecorator::~COVRSceneManagerDecorator()
 {
     pDistortionCallBack->drop();
     pDistortionTexture->drop();
+    pRealCamera->drop();
     pCamera->drop();
+    pEyeRight->drop();
+    pEyeLeft->drop();
+    pHeadZ->drop();
+    pHeadY->drop();
+    pHeadX->drop();
+    pHead->drop();
 }
 
 void COVRSceneManagerDecorator::drawAll()
@@ -182,7 +189,7 @@ void COVRSceneManagerDecorator::drawAll()
     video::IVideoDriver* driver = SceneManager->getVideoDriver();
     if (!driver) return;
 
-    ICameraSceneNode *pRealCamera = SceneManager->getActiveCamera();
+    pRealCamera = SceneManager->getActiveCamera();
     if (!pRealCamera) return;
 
     core::matrix4 matrix;
@@ -209,8 +216,11 @@ void COVRSceneManagerDecorator::drawAll()
     matrix.transformVect(vFore);
     matrix.transformVect(vUp  );
 
+    // update animators
+    CSceneManagerDecorator::drawAll();
+
     // render
-    SceneManager->setActiveCamera(pCamera);
+    CSceneManagerDecorator::setActiveCamera(pCamera);
 
     const StereoEyeParams *params;
 
@@ -278,8 +288,52 @@ void COVRSceneManagerDecorator::drawAll()
     driver->setMaterial(DistortionMaterial);
     driver->drawIndexedTriangleList(PlaneVertices, 4, PlaneIndices, 2);
 
-    SceneManager->setActiveCamera(pRealCamera);
+    CSceneManagerDecorator::setActiveCamera(pRealCamera);
 }
+
+/*
+ICameraSceneNode* COVRSceneManagerDecorator::addCameraSceneNode(ISceneNode* parent,
+    const core::vector3df& position, const core::vector3df& lookat, s32 id,
+    bool makeActive)
+{
+    // "this" makes all the difference
+    ICameraSceneNode* node =
+        CSceneManagerDecorator::addCameraSceneNode(parent, position, lookat, id, makeActive);
+
+    node->setSceneManager(this);
+
+    return node;
+}
+*/
+
+void COVRSceneManagerDecorator::setActiveCamera(ICameraSceneNode *camera)
+{
+    if (camera) camera->grab();
+    if (pRealCamera) pRealCamera->drop();
+
+    pRealCamera = camera;
+
+    CSceneManagerDecorator::setActiveCamera(camera);
+}
+
+ICameraSceneNode* COVRSceneManagerDecorator::getActiveCamera() const
+{
+    return pRealCamera;
+}
+
+/*
+bool COVRSceneManagerDecorator::postEventFromUser(const SEvent& event)
+{
+    bool ret = CSceneManagerDecorator::postEventFromUser(event);
+
+    printf("passing event");
+
+    if (pRealCamera)
+        ret = ret || pRealCamera->OnEvent(event);
+
+    return ret;
+}
+*/
 
 }
 }
