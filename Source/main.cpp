@@ -117,6 +117,8 @@ int main()
     ICameraSceneNode* Camera = smgr->addCameraSceneNodeFPS(0, 25.0f, .4f, -1, keyMap, 9, false, 3.f);
     ISceneNode* Head = smgr->addSphereSceneNode(.5f, 16, Camera, -1, vector3df(0, 0, 20.0f));
 
+    device->getCursorControl()->setVisible(false);
+
     while(device->run())
     {
         if(receiver.IsKeyDown(irr::KEY_ESCAPE))
