@@ -253,9 +253,9 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = ZFar * ZNear / (ZNear - ZFar);
     matrix4_another_handed(matrix);
 
-    pCamera->setPosition(pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
-    pCamera->setTarget  (pRealCamera->getTarget  () + pEyeRight->getAbsolutePosition());
-    pCamera->setUpVector(pRealCamera->getUpVector());
+    pCamera->setPosition(        pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
+    pCamera->setTarget  (vFore + pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
+    pCamera->setUpVector(vUp);
     pCamera->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
