@@ -198,7 +198,7 @@ void COVRSceneManagerDecorator::drawAll()
 
     pitch *= -core::RADTODEG;
     yaw *= -core::RADTODEG;
-    roll *= -core::RADTODEG;
+    roll *= core::RADTODEG;
 
     pHead->setRotation(pRealCamera->getRotation());
     pHeadX->setRotation(irr::core::vector3df( pitch,   0,    0));
