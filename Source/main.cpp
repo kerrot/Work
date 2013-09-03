@@ -1,7 +1,6 @@
 #include <irrlicht.h>
 #include <stdio.h>
 
-#include "CSceneManagerDecorator.h"
 #include "COVRSceneManagerDecorator.h"
 
 using namespace irr;
@@ -11,8 +10,6 @@ using namespace video;
 using namespace io;
 using namespace gui;
 
-
-bool enable = false;
 
 IrrlichtDevice *device = 0;
 
@@ -92,9 +89,6 @@ int main()
         }
     }
     
-    // can only give smgr as parent in CSceneManager.cpp
-    // may change this after we implement COVRSceneManager
-    //ICameraSceneNode* Camera = new COVRCameraSceneNode(NULL, smgr, -1);
     ICameraSceneNode* Camera = smgr->addCameraSceneNode();
     
     while(device->run())
@@ -106,7 +100,6 @@ int main()
         }
 
         driver->beginScene(true, true, SColor(0,100,100,100));
-        smgr->setActiveCamera(Camera);
         smgr->drawAll();
         driver->endScene();
     }

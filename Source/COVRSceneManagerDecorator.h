@@ -1,10 +1,36 @@
 #ifndef __C_OVR_SCENE_MANAGER_DECORATOR__
 #define __C_OVR_SCENE_MANAGER_DECORATOR__
 
+#include <IShaderConstantSetCallBack.h>
+#include <IMaterialRendererServices.h>
+#include <OVR.h>
+
 #include "CSceneManagerDecorator.h"
+
+using namespace OVR;
+using namespace OVR::Util::Render;
 
 namespace irr
 {
+
+    class RiftDistortionCallBack : public video::IShaderConstantSetCallBack
+    {   
+    public:
+        f32 Scale[2],
+            ScaleIn[2],
+            ScreenCenter[2],
+            LensCenter[2],
+            HMDWarpParam[4];
+
+        virtual void OnSetConstants(video::IMaterialRendererServices *a_pServices, s32 a_iUserData)
+        {   
+            a_pServices->setPixelShaderConstant("scale"       , Scale       , 2); 
+            a_pServices->setPixelShaderConstant("scaleIn"     , ScaleIn     , 2); 
+            a_pServices->setPixelShaderConstant("lensCenter"  , LensCenter  , 2); 
+            a_pServices->setPixelShaderConstant("hmdWarpParam", HMDWarpParam, 4); 
+        }   
+    };
+
 namespace scene
 {
 
@@ -12,12 +38,38 @@ namespace scene
     {
     public:
 
-        COVRSceneManagerDecorator(ISceneManager* smgr) : CSceneManagerDecorator(smgr) {}
+        COVRSceneManagerDecorator(ISceneManager* smgr);
+
+        ~COVRSceneManagerDecorator();
 
         virtual void drawAll();
+
+    protected:
+
+        f32 ZNear;
+        f32 ZFar;
+
+        Ptr<DeviceManager> HMDManager;
+        Ptr<HMDDevice> HMD;
+        Ptr<SensorDevice> Sensor;
+        HMDInfo Info;
+        SensorFusion Fusion;
+        StereoConfig SConfig;
+        RiftDistortionCallBack *pDistortionCallBack;
+
+        video::SMaterial DistortionMaterial;
+        video::ITexture *pDistortionTexture;
+        video::S3DVertex PlaneVertices[4];
+        u16 PlaneIndices[6];
+
+        ISceneNode *pHead;
+        ISceneNode *pEyeLeft;
+        ISceneNode *pEyeRight;
+        ICameraSceneNode *pCamera;
+
     };
 
-}
-}
+} // end of namespace scene
+} // end of namespace irr
 
 #endif
