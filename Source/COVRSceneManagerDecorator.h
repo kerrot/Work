@@ -81,6 +81,8 @@ namespace scene
         ISceneNode *pHeadZ;
         ISceneNode *pEyeLeft;
         ISceneNode *pEyeRight;
+        core::vector3df vTarget;
+        core::vector3df vUp;
         ICameraSceneNode *pRealCamera;
         ICameraSceneNode *pCamera;
 

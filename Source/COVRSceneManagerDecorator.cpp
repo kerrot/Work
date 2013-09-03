@@ -84,7 +84,8 @@ namespace scene
 {
 
 COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
-    :CSceneManagerDecorator(smgr), ZNear(1.0f), ZFar(10000.0f)
+    :CSceneManagerDecorator(smgr), ZNear(1.0f), ZFar(10000.0f),
+    vTarget(core::vector3df(0.0f, 0.0f, 1.0f)), vUp(core::vector3df(0.0f, 1.0f, 0.0f))
 {
     #ifdef _DEBUG
     setDebugName("COVRSceneManagerDecorator");
@@ -193,8 +194,8 @@ void COVRSceneManagerDecorator::drawAll()
     if (!pRealCamera) return;
 
     core::matrix4 matrix;
-    core::vector3df vFore = pRealCamera->getTarget(),
-                    vUp   = pRealCamera->getUpVector();
+    core::vector3df target = vTarget,
+                    up     = vUp;
     f32 pitch = 0,
         yaw = 0,
         roll = 0;
@@ -213,8 +214,8 @@ void COVRSceneManagerDecorator::drawAll()
     pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
 
     matrix.setRotationDegrees(pHeadZ->getAbsoluteTransformation().getRotationDegrees());
-    matrix.transformVect(vFore);
-    matrix.transformVect(vUp  );
+    //matrix.transformVect(target);
+    matrix.transformVect(up);
 
     // update animators
     CSceneManagerDecorator::drawAll();
@@ -231,9 +232,9 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = ZFar * ZNear / (ZNear - ZFar);
     matrix4_another_handed(matrix);
 
-    pCamera->setPosition(        pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
-    pCamera->setTarget  (vFore + pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
-    pCamera->setUpVector(vUp);
+    pCamera->setPosition(         pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
+    pCamera->setTarget  (target + pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
+    //pCamera->setUpVector(up);
     pCamera->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
@@ -263,9 +264,9 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = ZFar * ZNear / (ZNear - ZFar);
     matrix4_another_handed(matrix);
 
-    pCamera->setPosition(        pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
-    pCamera->setTarget  (vFore + pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
-    pCamera->setUpVector(vUp);
+    pCamera->setPosition(         pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
+    pCamera->setTarget  (target + pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
+    //pCamera->setUpVector(up);
     pCamera->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
@@ -310,6 +311,9 @@ void COVRSceneManagerDecorator::setActiveCamera(ICameraSceneNode *camera)
 {
     if (camera) camera->grab();
     if (pRealCamera) pRealCamera->drop();
+
+    vTarget = camera->getTarget();
+    vUp = camera->getUpVector();
 
     pRealCamera = camera;
 
