@@ -114,8 +114,8 @@ int main()
     keyMap[8].Action = EKA_JUMP_UP;
     keyMap[8].KeyCode = KEY_KEY_J;
 
-    ICameraSceneNode* Camera = smgr->addCameraSceneNodeFPS(0, 100.0f, .4f, -1, keyMap, 9, false, 3.f);
-    ISceneNode* Head = smgr->addSphereSceneNode(2.0f, 16, Camera, -1, vector3df(0, 0, 20.0f));
+    ICameraSceneNode* Camera = smgr->addCameraSceneNodeFPS(0, 25.0f, .4f, -1, keyMap, 9, false, 3.f);
+    ISceneNode* Head = smgr->addSphereSceneNode(.5f, 16, Camera, -1, vector3df(0, 0, 20.0f));
 
     while(device->run())
     {

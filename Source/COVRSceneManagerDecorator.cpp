@@ -214,7 +214,7 @@ void COVRSceneManagerDecorator::drawAll()
     pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
 
     matrix.setRotationDegrees(pHeadZ->getAbsoluteTransformation().getRotationDegrees());
-    //matrix.transformVect(target);
+    matrix.transformVect(target);
     matrix.transformVect(up);
 
     // update animators
@@ -234,7 +234,7 @@ void COVRSceneManagerDecorator::drawAll()
 
     pCamera->setPosition(         pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
     pCamera->setTarget  (target + pRealCamera->getPosition() + pEyeLeft->getAbsolutePosition());
-    //pCamera->setUpVector(up);
+    pCamera->setUpVector(up);
     pCamera->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
@@ -266,7 +266,7 @@ void COVRSceneManagerDecorator::drawAll()
 
     pCamera->setPosition(         pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
     pCamera->setTarget  (target + pRealCamera->getPosition() + pEyeRight->getAbsolutePosition());
-    //pCamera->setUpVector(up);
+    pCamera->setUpVector(up);
     pCamera->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
