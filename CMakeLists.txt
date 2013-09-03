@@ -49,13 +49,18 @@ include_directories (
 
 link_directories ("${IRRLICHT_LIB_DIR}" "${OCULUS_SDK_LIB_DIR}")
 
-add_executable (test ${CMAKE_SOURCE_DIR}/Source/main.cpp)
+add_executable (
+  test
+  ${CMAKE_SOURCE_DIR}/Source/main.cpp
+  ${CMAKE_SOURCE_DIR}/Source/COVRSceneManagerDecorator.cpp
+  #${CMAKE_SOURCE_DIR}/Source/COVRCameraSceneNode.cpp
+)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   if (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "x86")
-      target_link_libraries (test Irrlicht libovr Winmm)
+    target_link_libraries (test Irrlicht libovr Winmm)
   elseif (${CMAKE_HOST_SYSTEM_PROCESSOR} MATCHES "AMD64")
-      target_link_libraries (test Irrlicht libovr64 Winmm)
+    target_link_libraries (test Irrlicht libovr64 Winmm)
   endif ()
 
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
