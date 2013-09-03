@@ -4,9 +4,6 @@ A simple Irrlicht application with Oculus Rift support.
 
 ## To build
 
-    cd Build/
-    cmake ../
-
 ### Windows
 
     open cmake-gui
@@ -20,6 +17,9 @@ A simple Irrlicht application with Oculus Rift support.
 
 ### Linux
 
+    cd Build/
+    cmake ../
+
     make
     make install
     cd ../
@@ -28,7 +28,7 @@ A simple Irrlicht application with Oculus Rift support.
 
 ### Windows
 
-    run.bat
+    double click ./Binary/test.exe
 
 ### Linux
 
