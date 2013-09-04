@@ -160,8 +160,6 @@ COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
     pHeadX = smgr->addEmptySceneNode(pHead, 0);
     pHeadY = smgr->addEmptySceneNode(pHeadX, 0);
     pHeadZ = smgr->addEmptySceneNode(pHeadY, 0);
-    //pEyeLeft = smgr->addEmptySceneNode(pHeadZ, 0);
-    //pEyeRight = smgr->addEmptySceneNode(pHeadZ, 0);
     f32 offset = SConfig.GetIPD() / 2.0f;
     pCameraLeft = smgr->addCameraSceneNode(
         pHeadY,
@@ -177,7 +175,6 @@ COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
         -1,
         false // not active yet
     );
-    //smgr->setActiveCamera(0);
 }
 
 COVRSceneManagerDecorator::~COVRSceneManagerDecorator()
@@ -185,7 +182,6 @@ COVRSceneManagerDecorator::~COVRSceneManagerDecorator()
     pDistortionCallBack->drop();
     pDistortionTexture->drop();
     pRealCamera->drop();
-    //pCamera->drop();
     pCameraRight->drop();
     pCameraLeft->drop();
     pEyeRight->drop();
@@ -205,10 +201,8 @@ void COVRSceneManagerDecorator::drawAll()
     if (!pRealCamera) return;
 
     core::matrix4 matrix;
-    /*
     core::vector3df target = vTarget,
                     up     = vUp;
-    */
     f32 pitch = 0,
         yaw = 0,
         roll = 0;
@@ -218,8 +212,8 @@ void COVRSceneManagerDecorator::drawAll()
     }
 
     pitch *= -core::RADTODEG;
-    yaw *= -core::RADTODEG;
-    roll *= core::RADTODEG;
+    yaw   *= -core::RADTODEG;
+    roll  *=  core::RADTODEG;
 
     // if setActiveCamera is invoked from the inside of the decorator
     if (pRealCamera != pHead->getParent()) mimicCamera();
@@ -227,9 +221,9 @@ void COVRSceneManagerDecorator::drawAll()
     pHeadY->setRotation(irr::core::vector3df(     0, yaw,    0));
     pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
 
-    //matrix.setRotationDegrees(pHeadZ->getAbsoluteTransformation().getRotationDegrees());
-    //matrix.transformVect(target);
-    //matrix.transformVect(up);
+    matrix.setRotationDegrees(pHeadZ->getAbsoluteTransformation().getRotationDegrees());
+    matrix.transformVect(target);
+    matrix.transformVect(up);
 
     //bind camera target to HMD
     //pRealCamera->setRotation(pRealCamera->getRotation() + target);
@@ -244,7 +238,6 @@ void COVRSceneManagerDecorator::drawAll()
 
     // render
     const StereoEyeParams *params;
-    core::vector3df offset;
 
     // leat eye
     params = &SConfig.GetEyeRenderParams(StereoEye_Left);
@@ -253,13 +246,9 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = zFar * zNear / (zNear - zFar);
     matrix4_another_handed(matrix);
 
-    offset = pCameraLeft->getAbsolutePosition() - pRealCamera->getAbsolutePosition();
-
-    //pCamera->setPosition(         pEyeLeft->getAbsolutePosition());
-    //pCamera->setTarget  (target + pEyeLeft->getAbsolutePosition());
-    //pCamera->setUpVector(up);
     CSceneManagerDecorator::setActiveCamera(pCameraLeft);
-    pCameraLeft->setTarget(pRealCamera->getTarget() + offset);
+    pCameraLeft->setTarget(target + pCameraLeft->getAbsolutePosition());
+    pCameraLeft->setUpVector(up);
     pCameraLeft->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
@@ -289,13 +278,9 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = zFar * zNear / (zNear - zFar);
     matrix4_another_handed(matrix);
 
-    offset = pCameraRight->getAbsolutePosition() - pRealCamera->getAbsolutePosition();
-
-    //pCamera->setPosition(         pEyeRight->getAbsolutePosition());
-    //pCamera->setTarget  (target + pEyeRight->getAbsolutePosition());
-    //pCamera->setUpVector(up);
     CSceneManagerDecorator::setActiveCamera(pCameraRight);
-    pCameraRight->setTarget(pRealCamera->getTarget() + offset);
+    pCameraRight->setTarget(target + pCameraRight->getAbsolutePosition());
+    pCameraRight->setUpVector(up);
     pCameraRight->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
@@ -369,6 +354,8 @@ bool COVRSceneManagerDecorator::postEventFromUser(const SEvent& event)
 
 void COVRSceneManagerDecorator::mimicCamera()
 {
+    vTarget = pRealCamera->getTarget();
+    vUp = pRealCamera->getUpVector();
     pRealCamera->addChild(pHead);
 }
 
