@@ -59,8 +59,10 @@ namespace scene
 
     protected:
 
+        /*
         f32 ZNear;
         f32 ZFar;
+        */
 
         Ptr<DeviceManager> HMDManager;
         Ptr<HMDDevice> HMD;
@@ -81,10 +83,15 @@ namespace scene
         ISceneNode *pHeadZ;
         ISceneNode *pEyeLeft;
         ISceneNode *pEyeRight;
-        core::vector3df vTarget;
-        core::vector3df vUp;
+        //core::vector3df vTarget;
+        //core::vector3df vUp;
         ICameraSceneNode *pRealCamera;
-        ICameraSceneNode *pCamera;
+        ICameraSceneNode *pCameraLeft;
+        ICameraSceneNode *pCameraRight;
+
+    private:
+
+        void mimicCamera();
 
     };
 
