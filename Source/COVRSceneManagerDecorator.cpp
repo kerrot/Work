@@ -84,7 +84,9 @@ namespace scene
 {
 
 COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
-    :CSceneManagerDecorator(smgr)
+    :CSceneManagerDecorator(smgr),
+    vTarget(core::vector3df(0, 0, 1)),
+    vUp(core::vector3df(0, 1, 0))
 {
     #ifdef _DEBUG
     setDebugName("COVRSceneManagerDecorator");
