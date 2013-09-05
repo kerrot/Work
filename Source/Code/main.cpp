@@ -1,6 +1,7 @@
 #include <irrlicht.h>
 #include <map>
 #include "Leap.h"
+#include "../COVRSceneManagerDecorator.h"
 
 
 using namespace Leap;
@@ -53,13 +54,13 @@ int main()
 
     IrrlichtDevice *device =
         createDevice( video::EDT_OPENGL, dimension2d<u32>(1280, 800), 16,
-        false, false, false, &receiver);
+        true, false, false, &receiver);
 
     if (!device)
         return 1;
 
     IVideoDriver* driver = device->getVideoDriver();
-    ISceneManager* smgr = device->getSceneManager();
+    ISceneManager* smgr = new COVRSceneManagerDecorator(device->getSceneManager());
     IGUIEnvironment* guienv = device->getGUIEnvironment();
 
     scene::ISceneNode* o = smgr->addSphereSceneNode(20);
@@ -104,7 +105,7 @@ int main()
     vector3df camshift(0,0,0);
 
     cam->setPosition(camPos);
-    cam->setTarget(core::vector3df(0,0,0));
+    cam->setTarget(core::vector3df(0,0,1));
 
     u32 then = device->getTimer()->getTime();
     const f32 MOVEMENT_SPEED = 50.f;

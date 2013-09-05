@@ -59,7 +59,11 @@ include_directories (
 
 link_directories ("${IRRLICHT_LIB_DIR}" "${OCULUS_SDK_LIB_DIR}" "${LEAP_LIB_DIR}")
 
-add_executable (test ${CMAKE_SOURCE_DIR}/Source/Code/main.cpp)
+add_executable (
+  test
+  ${CMAKE_SOURCE_DIR}/Source/Code/main.cpp
+  ${CMAKE_SOURCE_DIR}/Source/COVRSceneManagerDecorator.cpp
+)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   target_link_libraries (test Irrlicht libovr Leapd Winmm)
