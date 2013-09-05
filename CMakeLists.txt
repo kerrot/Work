@@ -63,6 +63,13 @@ add_executable (
   test
   ${CMAKE_SOURCE_DIR}/Source/main.cpp
   ${CMAKE_SOURCE_DIR}/Source/COVRSceneManagerDecorator.cpp
+  ${CMAKE_SOURCE_DIR}/Source/PrimateMurder.cpp
+  ${CMAKE_SOURCE_DIR}/Source/GameWorld.cpp
+  ${CMAKE_SOURCE_DIR}/Source/LeapDevice.cpp
+  ${CMAKE_SOURCE_DIR}/Source/GameObjectFactory.cpp
+  ${CMAKE_SOURCE_DIR}/Source/GameObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/GamePhysics.cpp
+  ${CMAKE_SOURCE_DIR}/Source/GameUtil.cpp
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
