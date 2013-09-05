@@ -1,7 +1,7 @@
 #include <irrlicht.h>
 #include <map>
 #include "Leap.h"
-#include "../COVRSceneManagerDecorator.h"
+#include "COVRSceneManagerDecorator.h"
 
 
 using namespace Leap;
