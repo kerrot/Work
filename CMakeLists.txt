@@ -78,19 +78,26 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   target_link_libraries (test Irrlicht GL X11 Xxf86vm ovr pthread udev Xinerama Leap)
 endif ()
 
-install (
-  TARGETS test
-  DESTINATION ${CMAKE_BINARY_DIR}
+set_target_properties (
+  test
+  PROPERTIES
+  INSTALL_RPATH "./"
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   install (
-	  FILES "${CMAKE_SOURCE_DIR}/ThirdParty/irrlicht-1.8/bin/${IRRLICHT_SYSTEM_NAME}/Irrlicht.dll"
-    DESTINATION ${CMAKE_BINARY_DIR}
-  )
-  install (
-	  FILES "${CMAKE_SOURCE_DIR}/ThirdParty/LeapSDK/lib/${LEAP_SDK_SYSTEM_NAME}/Leapd.dll"
+    FILES ${IRRLICHT_LIB}
     DESTINATION ${CMAKE_BINARY_DIR}
   )
 endif ()
+
+install (
+  FILES ${LEAP_SDK_LIB}
+  DESTINATION ${CMAKE_BINARY_DIR}
+)
+
+install (
+  TARGETS test
+  DESTINATION ${CMAKE_BINARY_DIR}
+)
 
