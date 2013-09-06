@@ -54,12 +54,24 @@ void PrimateMurder::Init()
     }
 
     m_driver = m_device->getVideoDriver();
-    m_smgr = new COVRSceneManagerDecorator(m_device->getSceneManager());
-    //m_smgr = m_device->getSceneManager();
+    //m_smgr = new COVRSceneManagerDecorator(m_device->getSceneManager());
+    m_smgr = m_device->getSceneManager();
     m_env = m_device->getGUIEnvironment();
 
     m_world->WorldInit();
     sGameObjectFactory->FactoryInit(m_smgr);
+
+    m_driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+
+    m_smgr->addSkyBoxSceneNode(
+        m_driver->getTexture("Resource/irrlicht2_up.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_dn.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_lf.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_rt.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_ft.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_bk.jpg"));
+
+    m_driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 }
 
 void PrimateMurder::Run()
