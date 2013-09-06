@@ -181,17 +181,29 @@ COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
 
 COVRSceneManagerDecorator::~COVRSceneManagerDecorator()
 {
+    /*
+    printf(
+        "ref counts:\n"
+        "  distortion callback: %d\n"
+        "  distortion texture: %d\n"
+        "  real camera: %d\n"
+        "  left camera: %d\n"
+        "  right camera: %d\n"
+        "  head: %d\n",
+        pDistortionCallBack->getReferenceCount(),
+        pDistortionTexture->getReferenceCount(),
+        pRealCamera->getReferenceCount(),
+        pCameraLeft->getReferenceCount(),
+        pCameraRight->getReferenceCount(),
+        pHead->getReferenceCount()
+    );
+    */
+    // we grabbed callback and texture when we new them
     pDistortionCallBack->drop();
     pDistortionTexture->drop();
+    // we grabbed pRealCamera when we get it, so we drop it now
     pRealCamera->drop();
-    pCameraRight->drop();
-    pCameraLeft->drop();
-    pEyeRight->drop();
-    pEyeLeft->drop();
-    pHeadZ->drop();
-    pHeadY->drop();
-    pHeadX->drop();
-    pHead->drop();
+    // and ISceneNode will drop its children for us
 }
 
 void COVRSceneManagerDecorator::drawAll()

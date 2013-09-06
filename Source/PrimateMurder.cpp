@@ -72,8 +72,8 @@ void PrimateMurder::Init()
     }
 
     m_driver = m_device->getVideoDriver();
-    //m_smgr = new COVRSceneManagerDecorator(m_device->getSceneManager());
     m_smgr = m_device->getSceneManager();
+    m_smgr = new COVRSceneManagerDecorator(m_smgr);
     m_env = m_device->getGUIEnvironment();
 
     m_world->WorldInit();

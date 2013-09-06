@@ -11,7 +11,9 @@ namespace scene
     {
     public:
 
-        CSceneManagerDecorator(ISceneManager* smgr):ISceneNode(0, 0), SceneManager(smgr) { SceneManager->grab(); }
+        CSceneManagerDecorator(ISceneManager* smgr)
+            :ISceneNode(0, 0), IReferenceCounted(), SceneManager(smgr)
+        { SceneManager->grab(); }
 
         ~CSceneManagerDecorator() { SceneManager->drop(); }
 
