@@ -64,6 +64,7 @@ void PrimateMurder::Init()
     params.Fullscreen = true;
     params.EventReceiver = this;
     m_device = createDeviceEx(params);
+    m_device->getCursorControl()->setVisible(false);
 
     if (!m_device)
     {
