@@ -86,15 +86,17 @@ set_target_properties (
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
   install (
-    FILES ${IRRLICHT_LIB}
+    FILES
+    "${CMAKE_SOURCE_DIR}/ThirdParty/irrlicht-1.8/lib/${IRRLICHT_SYSTEM_NAME}/Irrlicht.dll"
+      "${CMAKE_SOURCE_DIR}/ThirdParty/LeapSDK/lib/${LEAP_SDK_SYSTEM_NAME}/Leapd.dll"
+    DESTINATION ${CMAKE_BINARY_DIR}
+  )
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  install (
+    FILES ${LEAP_SDK_LIB}
     DESTINATION ${CMAKE_BINARY_DIR}
   )
 endif ()
-
-install (
-  FILES ${LEAP_SDK_LIB}
-  DESTINATION ${CMAKE_BINARY_DIR}
-)
 
 install (
   TARGETS test
