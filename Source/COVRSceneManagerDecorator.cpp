@@ -158,11 +158,21 @@ COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
     PlaneIndices[4] = 2;
     PlaneIndices[5] = 3;
 
+    // strategy: if we keep it, we grab it
     pHead = smgr->addEmptySceneNode(0, 0);
+    pHead->grab();
+
     pHeadX = smgr->addEmptySceneNode(pHead, 0);
+    pHeadX->grab();
+
     pHeadY = smgr->addEmptySceneNode(pHeadX, 0);
+    pHeadY->grab();
+
     pHeadZ = smgr->addEmptySceneNode(pHeadY, 0);
+    pHeadZ->grab();
+
     f32 offset = SConfig.GetIPD() / 2.0f;
+
     pCameraLeft = smgr->addCameraSceneNode(
         pHeadY,
         core::vector3df( offset, 0,   0),
@@ -170,6 +180,8 @@ COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
         -1,
         false // not active yet
     );
+    pCameraLeft->grab();
+
     pCameraRight = smgr->addCameraSceneNode(
         pHeadY,
         core::vector3df(-offset, 0,   0),
@@ -177,10 +189,25 @@ COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
         -1,
         false // not active yet
     );
+    pCameraRight->grab();
 }
 
 COVRSceneManagerDecorator::~COVRSceneManagerDecorator()
 {
+    // we grabbed callback and texture when we new them
+    pDistortionCallBack->drop();
+    pDistortionTexture->drop();
+    // we grabbed pRealCamera when we get it, so we drop it now
+    pRealCamera->drop();
+    // if we grabbed them, we drop them
+    pCameraLeft->drop();
+    pCameraRight->drop();
+    pHeadZ->drop();
+    pHeadY->drop();
+    pHeadX->drop();
+    pHead->drop();
+    // then let scene manager drops all its children
+
     /*
     printf(
         "ref counts:\n"
@@ -189,21 +216,21 @@ COVRSceneManagerDecorator::~COVRSceneManagerDecorator()
         "  real camera: %d\n"
         "  left camera: %d\n"
         "  right camera: %d\n"
+        "  head x: %d\n"
+        "  head y: %d\n"
+        "  head z: %d\n"
         "  head: %d\n",
         pDistortionCallBack->getReferenceCount(),
         pDistortionTexture->getReferenceCount(),
         pRealCamera->getReferenceCount(),
         pCameraLeft->getReferenceCount(),
         pCameraRight->getReferenceCount(),
+        pHeadX->getReferenceCount(),
+        pHeadY->getReferenceCount(),
+        pHeadZ->getReferenceCount(),
         pHead->getReferenceCount()
     );
     */
-    // we grabbed callback and texture when we new them
-    pDistortionCallBack->drop();
-    pDistortionTexture->drop();
-    // we grabbed pRealCamera when we get it, so we drop it now
-    pRealCamera->drop();
-    // and ISceneNode will drop its children for us
 }
 
 void COVRSceneManagerDecorator::drawAll()
