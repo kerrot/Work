@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (test)
+project (pm)
 
 set (CMAKE_BUILD_TYPE "Debug")
 
@@ -60,7 +60,7 @@ include_directories (
 link_directories ("${IRRLICHT_LIB_DIR}" "${OCULUS_SDK_LIB_DIR}" "${LEAP_LIB_DIR}")
 
 add_executable (
-  test
+  pm
   ${CMAKE_SOURCE_DIR}/Source/main.cpp
   ${CMAKE_SOURCE_DIR}/Source/COVRSceneManagerDecorator.cpp
   ${CMAKE_SOURCE_DIR}/Source/PrimateMurder.cpp
@@ -73,13 +73,13 @@ add_executable (
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
-  target_link_libraries (test Irrlicht libovr Leapd Winmm)
+  target_link_libraries (pm Irrlicht libovr Leapd Winmm)
 elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  target_link_libraries (test Irrlicht GL X11 Xxf86vm ovr pthread udev Xinerama Leap)
+  target_link_libraries (pm Irrlicht GL X11 Xxf86vm ovr pthread udev Xinerama Leap)
 endif ()
 
 set_target_properties (
-  test
+  pm
   PROPERTIES
   INSTALL_RPATH "./"
 )
@@ -99,7 +99,7 @@ elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif ()
 
 install (
-  TARGETS test
+  TARGETS pm
   DESTINATION ${CMAKE_BINARY_DIR}
 )
 

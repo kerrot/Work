@@ -1,11 +1,8 @@
-# test
+# Primate Murder
 
-A simple Irrlicht application with Oculus Rift support.
+An Rift enabled game.
 
 ## To build
-
-    cd Build/
-    cmake ../
 
 ### Windows
 
@@ -14,11 +11,14 @@ A simple Irrlicht application with Oculus Rift support.
     select Build\ as build dir
     click 'Configure'
     click 'Generate'
-    open Build\test.sln with MCVS
+    open Build\pm.sln with MCVS
     Build ALL_BUILD
     Build INSTALL
 
 ### Linux
+
+    cd Build/
+    cmake ../
 
     make
     make install
@@ -28,10 +28,11 @@ A simple Irrlicht application with Oculus Rift support.
 
 ### Windows
 
-    run.bat
+    double click ./Binary/pm.exe
 
 ### Linux
 
-    ./Binary/test
+    cd Binary/
+    ./pm
 
 ## License
