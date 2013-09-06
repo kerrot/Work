@@ -24,14 +24,8 @@ void GameObjectFactory::FactoryInit( ISceneManager* a_mgr )
 {
     m_mgr = a_mgr;
 
-    ISceneNode* o = m_mgr->addSphereSceneNode(20);
-    //o->setMaterialFlag(video::EMF_LIGHTING, false);
-    o->setPosition(core::vector3df(0,0,0));
-    video::SMaterial &m = o->getMaterial(0);
-    m.EmissiveColor = video::SColor(255, 255, 0, 0);
-
     scene::ICameraSceneNode* cam = m_mgr->addCameraSceneNodeFPS();
-    core::vector3df camPos(0,0,200);
+    core::vector3df camPos(0,0,50);
     cam->setPosition(camPos);
     cam->setTarget(core::vector3df(0,0,0));
 }

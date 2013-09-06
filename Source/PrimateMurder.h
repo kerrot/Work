@@ -35,6 +35,7 @@ public:
 
 private:
     void Init();
+    void SetupWorld();
 
     GameWorld* m_world;
     GamePhysics* m_physics;

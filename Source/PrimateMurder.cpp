@@ -61,17 +61,7 @@ void PrimateMurder::Init()
     m_world->WorldInit();
     sGameObjectFactory->FactoryInit(m_smgr);
 
-    m_driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
-
-    m_smgr->addSkyBoxSceneNode(
-        m_driver->getTexture("Resource/irrlicht2_up.jpg"),
-        m_driver->getTexture("Resource/irrlicht2_dn.jpg"),
-        m_driver->getTexture("Resource/irrlicht2_lf.jpg"),
-        m_driver->getTexture("Resource/irrlicht2_rt.jpg"),
-        m_driver->getTexture("Resource/irrlicht2_ft.jpg"),
-        m_driver->getTexture("Resource/irrlicht2_bk.jpg"));
-
-    m_driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
+    SetupWorld();
 }
 
 void PrimateMurder::Run()
@@ -89,4 +79,38 @@ void PrimateMurder::Run()
 
         m_driver->endScene();
     }
+}
+
+void PrimateMurder::SetupWorld()
+{
+    m_driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, false);
+
+    m_smgr->addSkyBoxSceneNode(
+        m_driver->getTexture("Resource/irrlicht2_up.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_dn.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_lf.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_rt.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_ft.jpg"),
+        m_driver->getTexture("Resource/irrlicht2_bk.jpg"));
+
+    m_driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
+
+    IAnimatedMesh* mesh = m_smgr->getMesh("Resource/maple.obj");
+    IAnimatedMeshSceneNode* tree = m_smgr->addAnimatedMeshSceneNode(mesh);
+    if (tree)
+    {
+        SMaterial &treem = tree->getMaterial(6);
+        treem.BackfaceCulling = false;
+    }
+
+    ISceneNode* ground = m_smgr->addSphereSceneNode(1000, 256);
+    ground->setPosition(core::vector3df(0, -1000, 0));
+    video::SMaterial &m = ground->getMaterial(0);
+    m.EmissiveColor = video::SColor(255, 0, 255, 0);
+
+    scene::ILightSceneNode* light = m_smgr->addLightSceneNode(0, 
+                                                    vector3df(0, 1100, 0), 
+                                                    SColorf(0.3f, 1.0f, 1.0f, 0.0f), 
+                                                    1000);
+
 }
