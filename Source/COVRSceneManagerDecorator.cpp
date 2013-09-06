@@ -42,6 +42,26 @@ void matrix4_print(core::matrix4 m) {
     return;
 }
 
+void vector3df_print(core::vector3df v) {
+    printf(
+        "{ X: %f, Y: %f, Z: %f }\n",
+        v.X, v.Y, v.Z
+    );
+    return;
+}
+
+void camera_print(irr::scene::ICameraSceneNode* cam) {
+    printf("  position: ");
+    vector3df_print(cam->getPosition());
+    printf("  rotation: ");
+    vector3df_print(cam->getRotation());
+    printf("  target: ");
+    vector3df_print(cam->getTarget());
+    printf("  up: ");
+    vector3df_print(cam->getUpVector());
+    return;
+}
+
 Matrix4f matrix4f_from_matrix4(core::matrix4 m) {
     return Matrix4f(
         m[0], m[4], m[8], m[12],
@@ -84,9 +104,7 @@ namespace scene
 {
 
 COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
-    :CSceneManagerDecorator(smgr),
-    vTarget(core::vector3df(0, 0, 1)),
-    vUp(core::vector3df(0, 1, 0))
+    :CSceneManagerDecorator(smgr)
 {
     #ifdef _DEBUG
     setDebugName("COVRSceneManagerDecorator");
@@ -241,9 +259,19 @@ void COVRSceneManagerDecorator::drawAll()
     pRealCamera = SceneManager->getActiveCamera();
     if (!pRealCamera) return;
 
+    // draw nothing, only update animators
+    f32 zNear = pRealCamera->getNearValue(),
+        zFar  = pRealCamera->getFarValue();
+
+    pRealCamera->setFarValue(pRealCamera->getNearValue() + .1f);
+    CSceneManagerDecorator::drawAll();
+    pRealCamera->setFarValue(zFar);
+
+    // update rotation for HMD
     core::matrix4 matrix;
-    core::vector3df target = vTarget,
-                    up     = vUp;
+    core::vector3df target = pRealCamera->getTarget(),
+                    up     = pRealCamera->getUpVector();
+    core::vector3df offset;
     f32 pitch = 0,
         yaw = 0,
         roll = 0;
@@ -263,19 +291,14 @@ void COVRSceneManagerDecorator::drawAll()
     pHeadZ->setRotation(irr::core::vector3df(     0,   0, roll));
 
     matrix.setRotationDegrees(pHeadZ->getAbsoluteTransformation().getRotationDegrees());
-    matrix.transformVect(target);
+    //matrix.transformVect(target);
     matrix.transformVect(up);
+
+    printf("hmd matrix:\n");
+    matrix4_print(matrix);
 
     //bind camera target to HMD
     //pRealCamera->setRotation(pRealCamera->getRotation() + target);
-
-    // draw nothing, only update animators
-    f32 zNear = pRealCamera->getNearValue(),
-        zFar  = pRealCamera->getFarValue();
-
-    pRealCamera->setFarValue(pRealCamera->getNearValue() + .1f);
-    CSceneManagerDecorator::drawAll();
-    pRealCamera->setFarValue(zFar);
 
     // render
     const StereoEyeParams *params;
@@ -287,9 +310,11 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = zFar * zNear / (zNear - zFar);
     matrix4_another_handed(matrix);
 
+    offset = pCameraLeft->getAbsolutePosition() - pRealCamera->getAbsolutePosition();
+
     CSceneManagerDecorator::setActiveCamera(pCameraLeft);
-    pCameraLeft->setTarget(target + pCameraLeft->getAbsolutePosition());
-    pCameraLeft->setUpVector(up);
+    pCameraLeft->setTarget(target + offset);
+    //pCameraLeft->setUpVector(up);
     pCameraLeft->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
@@ -319,9 +344,11 @@ void COVRSceneManagerDecorator::drawAll()
     matrix[14] = zFar * zNear / (zNear - zFar);
     matrix4_another_handed(matrix);
 
+    offset = pCameraRight->getAbsolutePosition() - pRealCamera->getAbsolutePosition();
+
     CSceneManagerDecorator::setActiveCamera(pCameraRight);
-    pCameraRight->setTarget(target + pCameraRight->getAbsolutePosition());
-    pCameraRight->setUpVector(up);
+    pCameraRight->setTarget(target + offset);
+    //pCameraRight->setUpVector(up);
     pCameraRight->setProjectionMatrix(matrix);
 
     driver->setRenderTarget(pDistortionTexture, true, true, video::SColor(0, 0, 0, 0));
@@ -345,6 +372,13 @@ void COVRSceneManagerDecorator::drawAll()
     driver->drawIndexedTriangleList(PlaneVertices, 4, PlaneIndices, 2);
 
     CSceneManagerDecorator::setActiveCamera(pRealCamera);
+
+    printf("\ncamera:\n");
+    camera_print(pRealCamera);
+    printf("left:\n");
+    camera_print(pCameraLeft);
+    printf("right:\n");
+    camera_print(pCameraRight);
 }
 
 /*
@@ -395,8 +429,6 @@ bool COVRSceneManagerDecorator::postEventFromUser(const SEvent& event)
 
 void COVRSceneManagerDecorator::mimicCamera()
 {
-    vTarget = pRealCamera->getTarget();
-    vUp = pRealCamera->getUpVector();
     pRealCamera->addChild(pHead);
 }
 
