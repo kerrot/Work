@@ -1,8 +1,11 @@
 #pragma once
 
+#include <IEventReceiver.h>
+
 namespace irr
 {
     class IrrlichtDevice;
+    struct SEvent;
     
     namespace video
     {
@@ -24,7 +27,7 @@ class GameWorld;
 class GamePhysics;
 class LeapDevice;
 
-class PrimateMurder
+class PrimateMurder : public irr::IEventReceiver
 {
 public:
     PrimateMurder();
@@ -32,6 +35,8 @@ public:
 
     
     void Run();
+
+    virtual bool OnEvent(const irr::SEvent& event);
 
 private:
     void Init();

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "irrlicht.h"
+#include <IEventReceiver.h>
 
 using namespace irr;
 

@@ -34,6 +34,24 @@ PrimateMurder::~PrimateMurder()
     m_smgr->drop();
 }
 
+bool PrimateMurder::OnEvent(const SEvent& event)
+{
+    bool result = false;
+
+    if (event.EventType == irr::EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
+    {
+        switch (event.KeyInput.Key) {
+            case irr::KEY_ESCAPE:
+                m_device->closeDevice();
+                result = true;
+                break;
+        }
+    }
+
+    // passing down the event
+    return result || m_world->OnEvent(event);
+}
+
 void PrimateMurder::Init()
 {
     m_world = new GameWorld();
@@ -44,7 +62,7 @@ void PrimateMurder::Init()
     params.DriverType = EDT_OPENGL;
     params.WindowSize = dimension2d<u32>(SCREEN_WIDTH, SCREEN_HEIGHT);
     params.Fullscreen = true;
-    params.EventReceiver = m_world;
+    params.EventReceiver = this;
     m_device = createDeviceEx(params);
 
     if (!m_device)
