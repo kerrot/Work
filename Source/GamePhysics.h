@@ -3,5 +3,5 @@
 class GamePhysics
 {
 public:
-    GamePhysics();
+    void PhysicsUpdate();
 };

@@ -1,7 +1,6 @@
 #include "GamePhysics.h"
 
-GamePhysics::GamePhysics()
+void GamePhysics::PhysicsUpdate()
 {
 
 }
-

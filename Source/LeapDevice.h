@@ -9,7 +9,7 @@ class LeapDevice
 {
 public:
     LeapDevice();
-
+    ~LeapDevice();
 
     void LeapUpdate();
 
