@@ -15,6 +15,7 @@ namespace irr
     namespace scene
     {
         class ISceneManager;
+        class ILightSceneNode;
     }
 
     namespace gui
@@ -50,4 +51,6 @@ private:
     irr::video::IVideoDriver* m_driver;
     irr::scene::ISceneManager* m_smgr;
     irr::gui::IGUIEnvironment* m_env;
+
+    irr::scene::ILightSceneNode* m_light;
 };

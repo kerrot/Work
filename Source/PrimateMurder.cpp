@@ -40,11 +40,18 @@ bool PrimateMurder::OnEvent(const SEvent& event)
 
     if (event.EventType == irr::EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
     {
-        switch (event.KeyInput.Key) {
-            case irr::KEY_ESCAPE:
-                m_device->closeDevice();
-                result = true;
-                break;
+        switch (event.KeyInput.Key) 
+        {
+        case irr::KEY_ESCAPE:    
+            m_device->closeDevice();
+            result = true;
+            break;
+        case KEY_KEY_X:
+            m_light->setPosition(m_light->getPosition() + vector3df(0,10,0));
+            break;
+        case KEY_SPACE:
+            m_light->setPosition(m_light->getPosition() + vector3df(0,-10,0));
+            break;
         }
     }
 
@@ -78,7 +85,7 @@ void PrimateMurder::Init()
     m_env = m_device->getGUIEnvironment();
 
     m_world->WorldInit();
-    sGameObjectFactory->FactoryInit(m_smgr);
+    sGameObjectFactory.FactoryInit(m_smgr);
 
     SetupWorld();
 }
@@ -127,9 +134,19 @@ void PrimateMurder::SetupWorld()
     video::SMaterial &m = ground->getMaterial(0);
     m.EmissiveColor = video::SColor(255, 0, 255, 0);
 
-    scene::ILightSceneNode* light = m_smgr->addLightSceneNode(0, 
-                                                    vector3df(0, 1100, 0), 
-                                                    SColorf(0.3f, 1.0f, 1.0f, 0.0f), 
-                                                    1000);
+    m_light = m_smgr->addLightSceneNode(0, 
+                                        vector3df(0, 1100, 0), 
+                                        SColorf(0.7f, 1.0f, 1.0f, 0.0f), 
+                                        1000);
 
+
+    ISceneNode* cube2 = m_smgr->addCubeSceneNode(10);
+    cube2->setPosition(vector3df(0,50, -110));
+
+    ISceneNode* cube = m_smgr->addCubeSceneNode(10);
+    cube->setPosition(vector3df(0,50, -100));
+    cube->setScale(vector3df(5.0, 1.0, 1.0));
+    //cube->setScale(vector3df(3.0, 1.0, 1.0));
+    video::SMaterial &c = cube->getMaterial(0);
+    //c.Wireframe = true;
 }
