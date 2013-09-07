@@ -124,9 +124,9 @@ COVRSceneManagerDecorator::COVRSceneManagerDecorator(ISceneManager *smgr)
         Sensor = *HMD->GetSensor();
         if (Sensor) Fusion.AttachToSensor(Sensor);
         HMD->GetDeviceInfo(&Info);
+        SConfig.SetHMDInfo(Info);
     }   
 
-    SConfig.SetHMDInfo(Info);
     SConfig.SetFullViewport(Viewport(0, 0, width, height));
 
     f32 DistScale = SConfig.GetDistortionScale();
