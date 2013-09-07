@@ -1,31 +1,58 @@
 #include "GameObjectFactory.h"
 #include <irrlicht.h>
+#include "GameObject.h"
 
 using namespace irr;
 using namespace irr::scene;
 
-GameObjectFactory* GameObjectFactory::m_instance = 0;
-
 GameObjectFactory::GameObjectFactory()
+:
+m_camera(0)
 {
 
 }
 
 GameObjectFactory::~GameObjectFactory()
 {
-    if (m_instance)
+    if (m_camera)
     {
-        delete m_instance;
-        m_instance = 0;
+        delete m_camera;
+        m_camera = 0;
     }
 }
 
 void GameObjectFactory::FactoryInit( ISceneManager* a_mgr )
 {
-    SKeyMap keyMap[9];
-
     m_mgr = a_mgr;
 
+    CreateCamera();
+}
+
+const std::vector<LeafObject*>& GameObjectFactory::GetLeaves()
+{
+    return m_leaves;
+}
+
+const std::vector<CollidableObject*>& GameObjectFactory::GetCollidables()
+{
+    return m_collidables;
+}
+
+GameObjectFactory& GameObjectFactory::GetInstance()
+{
+    static GameObjectFactory m_instance;
+
+    return m_instance;
+}
+
+const GameObject* GameObjectFactory::GetCamera()
+{
+    return m_camera;
+}
+
+void GameObjectFactory::CreateCamera()
+{
+    SKeyMap keyMap[9];
     keyMap[0].Action = EKA_MOVE_FORWARD;
     keyMap[0].KeyCode = KEY_UP;
     keyMap[1].Action = EKA_MOVE_FORWARD;
@@ -49,28 +76,8 @@ void GameObjectFactory::FactoryInit( ISceneManager* a_mgr )
     keyMap[8].Action = EKA_JUMP_UP;
     keyMap[8].KeyCode = KEY_KEY_J;
 
-    scene::ICameraSceneNode* cam = m_mgr->addCameraSceneNodeFPS(0, 25.0f, .1f, -1, keyMap, 9, false, 3.f);
-    core::vector3df camPos(0,0,50);
-    cam->setPosition(camPos);
-    cam->setTarget(core::vector3df(0,0,0));
-}
-
-const std::vector<LeafObject*>& GameObjectFactory::GetLeaves()
-{
-    return m_leaves;
-}
-
-const std::vector<CollidableObject*>& GameObjectFactory::GetCollidables()
-{
-    return m_collidables;
-}
-
-GameObjectFactory* GameObjectFactory::GetInstance()
-{
-    if (m_instance == 0)
-    {
-        m_instance = new GameObjectFactory();
-    }
-
-    return m_instance;
+    ICameraSceneNode* cam = m_mgr->addCameraSceneNodeFPS(0, 25.0f, .1f, -1, keyMap, 9, false, 3.f);
+    
+    m_camera = new GameObject(cam);
+    m_camera->SetPosition(0, 0, -50);
 }

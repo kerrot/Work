@@ -1,7 +1,5 @@
 #pragma once
 
-struct GameVector3D;
-
 namespace irr
 {
     namespace scene
@@ -13,10 +11,14 @@ namespace irr
 class GameObject
 {
 public:
-    GameObject(irr::scene::ISceneNode* a_node);
-    ~GameObject();
-
     void SetVisible(bool a_result);
-    void SetPosition(const GameVector3D& a_position);
-    void SetRotation(const GameVector3D& a_normal);
+    void SetPosition(float a_x, float a_y, float a_z);
+    void SetRotation(float a_x, float a_y, float a_z);
+
+protected:
+    friend class GameObjectFactory;
+    GameObject(irr::scene::ISceneNode* a_node);
+    virtual ~GameObject();
+
+    irr::scene::ISceneNode* m_node;
 };

@@ -18,19 +18,20 @@ class CollidableObject;
 class GameObjectFactory
 {
 public:
-    static GameObjectFactory* GetInstance();
+    static GameObjectFactory& GetInstance();
 
     void FactoryInit(irr::scene::ISceneManager* a_mgr);
 
+    const GameObject* GetCamera();
     const std::vector<LeafObject*>& GetLeaves();
     const std::vector<CollidableObject*>& GetCollidables();
 
     ~GameObjectFactory();
 
 private:
-    static GameObjectFactory* m_instance;
-
     GameObjectFactory();
+
+    void CreateCamera();
 
     std::vector<GameObject*> m_gameObjects;
     std::vector<LeafObject*> m_leaves;
@@ -38,6 +39,8 @@ private:
     std::vector<CollidableObject*> m_collidables;
 
     irr::scene::ISceneManager* m_mgr;
+
+    GameObject* m_camera;
 };
 
 #define sGameObjectFactory GameObjectFactory::GetInstance()
