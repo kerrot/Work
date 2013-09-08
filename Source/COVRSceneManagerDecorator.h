@@ -76,6 +76,8 @@ namespace scene
         ISceneNode *pHeadX;
         ISceneNode *pHeadY;
         ISceneNode *pHeadZ;
+        ISceneNode *pTarget;
+        ISceneNode *pUp;
         ICameraSceneNode *pRealCamera;
         ICameraSceneNode *pCameraLeft;
         ICameraSceneNode *pCameraRight;
