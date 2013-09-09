@@ -1,7 +1,9 @@
 #pragma once
 
-typedef unsigned __int32 UInt32;
-typedef unsigned __int64 UInt64;
+#include <stdint.h>
+
+typedef uint32_t UInt32;
+typedef uint64_t UInt64;
 
 #include <vector>
 #include <map>
