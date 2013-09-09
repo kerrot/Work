@@ -70,6 +70,7 @@ add_executable (
   ${CMAKE_SOURCE_DIR}/Source/GameObject.cpp
   ${CMAKE_SOURCE_DIR}/Source/GamePhysics.cpp
   ${CMAKE_SOURCE_DIR}/Source/GameUtil.cpp
+  ${CMAKE_SOURCE_DIR}/Source/GameMatrix4.cpp
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")

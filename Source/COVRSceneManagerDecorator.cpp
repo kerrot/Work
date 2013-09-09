@@ -5,43 +5,11 @@
 #include <EShaderTypes.h>
 
 #include "COVRSceneManagerDecorator.h"
+#include "GameMatrix4.h"
 
 namespace irr
 {
-
 /* ugly handmade private functions */
-void matrix4f_print(Matrix4f m) {
-    printf(
-        "{\n"
-        "  % 08f,% 08f,% 08f,% 08f\n"
-        "  % 08f,% 08f,% 08f,% 08f\n"
-        "  % 08f,% 08f,% 08f,% 08f\n"
-        "  % 08f,% 08f,% 08f,% 08f\n"
-        "}\n",
-        m.M[0][0], m.M[0][1], m.M[0][2], m.M[0][3],
-        m.M[1][0], m.M[1][1], m.M[1][2], m.M[1][3],
-        m.M[2][0], m.M[2][1], m.M[2][2], m.M[2][3],
-        m.M[3][0], m.M[3][1], m.M[3][2], m.M[3][3]
-    );  
-    return;
-}
-
-void matrix4_print(core::matrix4 m) {
-    printf(
-        "{\n"
-        "  % 08f,% 08f,% 08f,% 08f\n"
-        "  % 08f,% 08f,% 08f,% 08f\n"
-        "  % 08f,% 08f,% 08f,% 08f\n"
-        "  % 08f,% 08f,% 08f,% 08f\n"
-        "}\n",
-        m[0], m[4], m[8], m[12],
-        m[1], m[5], m[9], m[13],
-        m[2], m[6], m[10], m[14],
-        m[3], m[7], m[11], m[15]
-    );  
-    return;
-}
-
 void vector3df_print(core::vector3df v) {
     printf(
         "{ X: %f, Y: %f, Z: %f }\n",
@@ -59,44 +27,6 @@ void camera_print(irr::scene::ICameraSceneNode* cam) {
     vector3df_print(cam->getTarget());
     printf("  up: ");
     vector3df_print(cam->getUpVector());
-    return;
-}
-
-Matrix4f matrix4f_from_matrix4(core::matrix4 m) {
-    return Matrix4f(
-        m[0], m[4], m[8], m[12],
-        m[1], m[5], m[9], m[13],
-        m[2], m[6], m[10], m[14],
-        m[3], m[7], m[11], m[15]
-    );
-}
-
-core::matrix4 matrix4_from_matrix4f(Matrix4f m) {
-    core::matrix4 ret;
-    ret[0] = m.M[0][0];
-    ret[1] = m.M[1][0];
-    ret[2] = m.M[2][0];
-    ret[3] = m.M[3][0];
-    ret[4] = m.M[0][1];
-    ret[5] = m.M[1][1];
-    ret[6] = m.M[2][1];
-    ret[7] = m.M[3][1];
-    ret[8] = m.M[0][2];
-    ret[9] = m.M[1][2];
-    ret[10] = m.M[2][2];
-    ret[11] = m.M[3][2];
-    ret[12] = m.M[0][3];
-    ret[13] = m.M[1][3];
-    ret[14] = m.M[2][3];
-    ret[15] = m.M[3][3];
-    return ret;
-}
-
-void matrix4_another_handed(core::matrix4 &m) {
-    m[8] = -m[8];
-    m[9] = -m[9];
-    m[10] = -m[10];
-    m[11] = -m[11];
     return;
 }
 
@@ -279,7 +209,6 @@ void COVRSceneManagerDecorator::drawAll()
     if (pRealCamera != pHead->getParent()) mimicCamera();
 
     // update rotation for HMD
-    core::matrix4 matrix;
     core::vector3df offset;
     f32 pitch = 0,
         yaw = 0,
@@ -301,14 +230,15 @@ void COVRSceneManagerDecorator::drawAll()
     //pRealCamera->setRotation(pRealCamera->getRotation() + target);
 
     // render
+    GameMatrix4 matrix;
     const StereoEyeParams *params;
 
     // left eye
     params = &SConfig.GetEyeRenderParams(StereoEye_Left);
-    matrix = matrix4_from_matrix4f(params->Projection * params->ViewAdjust);
+    matrix = params->Projection * params->ViewAdjust;
     matrix[10] = zFar / (zNear - zFar);
     matrix[14] = zFar * zNear / (zNear - zFar);
-    matrix4_another_handed(matrix);
+    matrix.switchHanded();
 
     offset = pCameraLeft->getAbsolutePosition() - pRealCamera->getAbsolutePosition();
 
@@ -340,10 +270,10 @@ void COVRSceneManagerDecorator::drawAll()
 
     // right eye
     params = &SConfig.GetEyeRenderParams(StereoEye_Right);
-    matrix = matrix4_from_matrix4f(params->Projection * params->ViewAdjust);
+    matrix = params->Projection * params->ViewAdjust;
     matrix[10] = zFar / (zNear - zFar);
     matrix[14] = zFar * zNear / (zNear - zFar);
-    matrix4_another_handed(matrix);
+    matrix.switchHanded();
 
     offset = pCameraRight->getAbsolutePosition() - pRealCamera->getAbsolutePosition();
 
