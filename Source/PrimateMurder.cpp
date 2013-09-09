@@ -138,15 +138,4 @@ void PrimateMurder::SetupWorld()
                                         vector3df(0, 1100, 0), 
                                         SColorf(0.7f, 1.0f, 1.0f, 0.0f), 
                                         1000);
-
-
-    ISceneNode* cube2 = m_smgr->addCubeSceneNode(10);
-    cube2->setPosition(vector3df(0,50, -110));
-
-    ISceneNode* cube = m_smgr->addCubeSceneNode(10);
-    cube->setPosition(vector3df(0,50, -100));
-    cube->setScale(vector3df(5.0, 1.0, 1.0));
-    //cube->setScale(vector3df(3.0, 1.0, 1.0));
-    video::SMaterial &c = cube->getMaterial(0);
-    //c.Wireframe = true;
 }

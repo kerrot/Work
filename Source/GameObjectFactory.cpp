@@ -1,9 +1,15 @@
 #include "GameObjectFactory.h"
 #include <irrlicht.h>
 #include "GameObject.h"
+#include "LeafObject.h"
+#include "GravityObject.h"
+#include "BasketObject.h"
+#include "WindObject.h"
 
 using namespace irr;
 using namespace irr::scene;
+using namespace irr::core;
+using namespace irr::video;
 
 GameObjectFactory::GameObjectFactory()
 :
@@ -19,6 +25,26 @@ GameObjectFactory::~GameObjectFactory()
         delete m_camera;
         m_camera = 0;
     }
+
+    for (std::vector<LeafObject*>::iterator iter = m_leaves.begin();
+        iter != m_leaves.end();
+        ++iter)
+    {
+        LeafObject* object = *iter;
+        delete object;
+    }
+    m_leaves.clear();
+
+    for (std::vector<CollidableObject*>::iterator iter = m_collidables.begin();
+        iter != m_collidables.end();
+        ++iter)
+    {
+        CollidableObject* object = *iter;
+        delete object;
+    }
+    m_collidables.clear();
+
+    m_windows.clear();
 }
 
 void GameObjectFactory::FactoryInit( ISceneManager* a_mgr )
@@ -26,14 +52,24 @@ void GameObjectFactory::FactoryInit( ISceneManager* a_mgr )
     m_mgr = a_mgr;
 
     CreateCamera();
+
+    LeafObject* leaf = CreateLeaf();
+    leaf->SetOriposition(PMVector(0, 100, -100));
+
+    CreateGravity();
+    CollidableObject* basket = CreateBasket();
+    basket->SetPosition(0, 0, -100);
+
+    CollidableObject* wind = CreateWind();
+    wind->SetPosition(0, 50, -100);
 }
 
-const std::vector<LeafObject*>& GameObjectFactory::GetLeaves()
+std::vector<LeafObject*>& GameObjectFactory::GetLeaves()
 {
     return m_leaves;
 }
 
-const std::vector<CollidableObject*>& GameObjectFactory::GetCollidables()
+std::vector<CollidableObject*>& GameObjectFactory::GetCollidables()
 {
     return m_collidables;
 }
@@ -45,7 +81,7 @@ GameObjectFactory& GameObjectFactory::GetInstance()
     return m_instance;
 }
 
-const GameObject* GameObjectFactory::GetCamera()
+GameObject* GameObjectFactory::GetCamera()
 {
     return m_camera;
 }
@@ -78,6 +114,54 @@ void GameObjectFactory::CreateCamera()
 
     ICameraSceneNode* cam = m_mgr->addCameraSceneNodeFPS(0, 25.0f, .1f, -1, keyMap, 9, false, 3.f);
     
-    m_camera = new GameObject(cam);
+    m_camera = new GameObject();
+    m_camera->SetNode(cam);
+
     m_camera->SetPosition(0, 0, -50);
+}
+
+LeafObject* GameObjectFactory::CreateLeaf()
+{
+    LeafObject* leaf = new LeafObject();
+
+    ISceneNode* leafNode = m_mgr->addSphereSceneNode(3);
+
+    leaf->SetNode(leafNode);
+
+    m_leaves.push_back(leaf);
+
+    return leaf;
+}
+
+void GameObjectFactory::CreateGravity()
+{
+    m_collidables.push_back(new GravityObject());
+}
+
+CollidableObject* GameObjectFactory::CreateBasket()
+{
+    ISceneNode* node = m_mgr->addCubeSceneNode(30);
+
+    BasketObject* basket = new BasketObject();
+    basket->SetNode(node);
+
+    m_collidables.push_back(basket);
+
+    return basket;
+}
+
+CollidableObject* GameObjectFactory::CreateWind()
+{
+    ISceneNode* node = m_mgr->addCubeSceneNode(1);
+    node->setScale(vector3df(25, 20, 15));
+    SMaterial &m = node->getMaterial(0);
+    m.Wireframe = true;
+
+    WindObject* wind = new WindObject();
+    wind->SetNode(node);
+
+    m_collidables.push_back(wind);
+    m_windows[wind->GetId()] = wind;
+
+    return wind;
 }

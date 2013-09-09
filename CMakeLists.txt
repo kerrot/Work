@@ -71,6 +71,12 @@ add_executable (
   ${CMAKE_SOURCE_DIR}/Source/GamePhysics.cpp
   ${CMAKE_SOURCE_DIR}/Source/GameUtil.cpp
   ${CMAKE_SOURCE_DIR}/Source/GameMatrix4.cpp
+  ${CMAKE_SOURCE_DIR}/Source/BasketObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/GravityObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/PMType.cpp
+  ${CMAKE_SOURCE_DIR}/Source/ResistanceObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/WindObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/WindowInterface.cpp
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")

@@ -8,8 +8,8 @@ class CollidableObject : public GameObject
 public:
     virtual void HitObject(LeafObject* a_Object) = 0;
 
-private:
+protected:
     friend class GameObjectFactory;
-    CollidableObject(irr::scene::ISceneNode* a_node);
+    CollidableObject();
     virtual ~CollidableObject();
 };
