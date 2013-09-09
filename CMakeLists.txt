@@ -75,8 +75,10 @@ add_executable (
   ${CMAKE_SOURCE_DIR}/Source/GravityObject.cpp
   ${CMAKE_SOURCE_DIR}/Source/PMType.cpp
   ${CMAKE_SOURCE_DIR}/Source/ResistanceObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/LeafObject.cpp
   ${CMAKE_SOURCE_DIR}/Source/WindObject.cpp
   ${CMAKE_SOURCE_DIR}/Source/WindowInterface.cpp
+  ${CMAKE_SOURCE_DIR}/Source/CollidableObject.cpp
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")

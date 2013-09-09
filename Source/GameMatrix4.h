@@ -13,7 +13,7 @@ public:
 
     GameMatrix4(const OVR::Matrix4f &matrix);
 
-    float& operator[](uint index) { return m[index]; }
+    float& operator[](unsigned int index) { return m[index]; }
 
     operator irr::core::matrix4() const;
 
