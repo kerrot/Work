@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vector>
+#include "PMCommon.h"
 
 namespace irr
 {
@@ -15,6 +15,8 @@ class LeafObject;
 class HandObject;
 class CollidableObject;
 
+class WindowInterface;
+
 class GameObjectFactory
 {
 public:
@@ -22,9 +24,12 @@ public:
 
     void FactoryInit(irr::scene::ISceneManager* a_mgr);
 
-    const GameObject* GetCamera();
-    const std::vector<LeafObject*>& GetLeaves();
-    const std::vector<CollidableObject*>& GetCollidables();
+    LeafObject* CreateLeaf();
+    CollidableObject* CreateWind();
+
+    GameObject* GetCamera();
+    std::vector<LeafObject*>& GetLeaves();
+    std::vector<CollidableObject*>& GetCollidables();
 
     ~GameObjectFactory();
 
@@ -32,11 +37,15 @@ private:
     GameObjectFactory();
 
     void CreateCamera();
+    void CreateGravity();
+    CollidableObject* CreateBasket();
 
     std::vector<GameObject*> m_gameObjects;
     std::vector<LeafObject*> m_leaves;
     std::vector<HandObject*> m_hands;
     std::vector<CollidableObject*> m_collidables;
+
+    std::map<UInt32, WindowInterface*> m_windows;
 
     irr::scene::ISceneManager* m_mgr;
 
