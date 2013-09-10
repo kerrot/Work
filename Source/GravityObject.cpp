@@ -1,9 +1,10 @@
 #include "GravityObject.h"
 #include "LeafObject.h"
+#include "PMDefine.h"
 
 GravityObject::GravityObject()
 :
-m_gravity(0, -0.001f, 0)
+m_gravity(0, - GRAVITY_ACCELERATION, 0)
 {
 
 }

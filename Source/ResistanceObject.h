@@ -1,6 +1,5 @@
 #pragma once
 #include "CollidableObject.h"
-#include "PMType.h"
 
 class ResistanceObject : public CollidableObject
 {
@@ -11,4 +10,6 @@ private:
     friend class GameObjectFactory;
     ResistanceObject();
     virtual ~ResistanceObject();
+
+    float m_arg;
 };

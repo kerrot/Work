@@ -8,7 +8,11 @@ class GameObject;
 class WindowInterface
 {
 public:
-    virtual void Resize(float a_width, float a_height);
+    PMVector GetProjectionPoint(PMVector a_point);
+    PMVector TransformByCoordinateSqure(PMVector a_point);
+
+    virtual void Resize(float &a_width, float &a_height);
+    virtual void ChangeRange(float &a_range);
     UInt32 GetId();
 
 protected:
@@ -24,4 +28,6 @@ protected:
     GameObject* m_object;
 
     PMVector m_normal;
+    PMVector m_planeVectorX;
+    PMVector m_planeVectorY;
 };

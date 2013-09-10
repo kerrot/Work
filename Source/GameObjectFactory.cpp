@@ -5,6 +5,7 @@
 #include "GravityObject.h"
 #include "BasketObject.h"
 #include "WindObject.h"
+#include "ResistanceObject.h"
 
 using namespace irr;
 using namespace irr::scene;
@@ -57,6 +58,8 @@ void GameObjectFactory::FactoryInit( ISceneManager* a_mgr )
     leaf->SetOriposition(PMVector(0, 100, -100));
 
     CreateGravity();
+    CreateResistance();
+
     CollidableObject* basket = CreateBasket();
     basket->SetPosition(0, 0, -100);
 
@@ -138,6 +141,11 @@ void GameObjectFactory::CreateGravity()
     m_collidables.push_back(new GravityObject());
 }
 
+void GameObjectFactory::CreateResistance()
+{
+    m_collidables.push_back(new ResistanceObject());
+}
+
 CollidableObject* GameObjectFactory::CreateBasket()
 {
     ISceneNode* node = m_mgr->addCubeSceneNode(30);
@@ -153,12 +161,17 @@ CollidableObject* GameObjectFactory::CreateBasket()
 CollidableObject* GameObjectFactory::CreateWind()
 {
     ISceneNode* node = m_mgr->addCubeSceneNode(1);
-    node->setScale(vector3df(25, 20, 15));
+    node->setRotation(vector3df(3.1416 * 2, 0, 0));
+
     SMaterial &m = node->getMaterial(0);
     m.Wireframe = true;
 
     WindObject* wind = new WindObject();
     wind->SetNode(node);
+
+    float width = 10, height = 10, range = 10;
+    wind->Resize(width, height);
+    wind->ChangeRange(range);
 
     m_collidables.push_back(wind);
     m_windows[wind->GetId()] = wind;

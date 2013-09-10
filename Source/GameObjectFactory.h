@@ -38,6 +38,7 @@ private:
 
     void CreateCamera();
     void CreateGravity();
+    void CreateResistance();
     CollidableObject* CreateBasket();
 
     std::vector<GameObject*> m_gameObjects;

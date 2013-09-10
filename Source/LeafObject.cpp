@@ -52,3 +52,8 @@ void LeafObject::SetOriposition( PMVector a_position )
     m_oriPosition = a_position;
     SetPosition(a_position);
 }
+
+const PMVector& LeafObject::GetVelocity()
+{
+    return m_velocity;
+}

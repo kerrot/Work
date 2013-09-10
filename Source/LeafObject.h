@@ -10,6 +10,8 @@ public:
     void UpdatePosition();
     void SetOriposition(PMVector a_position);
 
+    const PMVector& GetVelocity();
+
 private:
     friend class GameObjectFactory;
     LeafObject();
