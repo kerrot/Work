@@ -1,4 +1,6 @@
 #include "GameWorld.h"
+#include "GameObjectFactory.h"
+#include "WindowInterface.h"
 
 void GameWorld::WorldUpdate()
 {
@@ -14,9 +16,3 @@ GameWorld::GameWorld()
 {
 
 }
-
-bool GameWorld::OnEvent( const SEvent& event )
-{
-    return false;
-}
-

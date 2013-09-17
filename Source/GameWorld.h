@@ -1,16 +1,13 @@
 #pragma once
 
-#include <IEventReceiver.h>
-
-using namespace irr;
-
-class GameWorld : public IEventReceiver
+class GameWorld
 {
 public:
     GameWorld();
 
-    virtual bool OnEvent(const SEvent& event);
-
     void WorldInit();
     void WorldUpdate();
+
+private:
+
 };

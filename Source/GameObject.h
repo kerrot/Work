@@ -13,18 +13,23 @@ struct PMVector;
 class GameObject
 {
 public:
-    void SetVisible(bool a_result) const;
-    void SetPosition(float a_x, float a_y, float a_z) const;
-    void SetRotation(float a_x, float a_y, float a_z) const;
+    virtual void SetVisible(bool a_result);
+    virtual void SetPosition(float a_x, float a_y, float a_z);
+    void SetRotation(float a_x, float a_y, float a_z);
     
-    void SetScale(PMVector a_scale) const;
-    void SetPosition(PMVector a_position) const;
-    void SetRotation(PMVector a_rotation) const;
+    void SetScale(PMVector a_scale);
+    virtual void SetPosition(PMVector a_position);
+    void SetRotation(PMVector a_rotation);
 
-    PMVector GetPosition() const;
+    PMVector GetPosition();
+    PMVector GetAbsolutePosition();
+    PMVector GetRotation();
 
 protected:
     friend class GameObjectFactory;
+    friend class HandObject;
+    friend class AvatarObject;
+    
     GameObject();
     void SetNode(irr::scene::ISceneNode* a_node);
     virtual ~GameObject();

@@ -6,7 +6,7 @@ WindObject::WindObject()
 :
 WindowInterface(this)
 ,m_range(10)
-,m_force(0.01)
+,m_force(0.01f)
 {
 
 }
@@ -22,7 +22,7 @@ void WindObject::HitObject( LeafObject* a_object )
     PMVector transformPoint = TransformByCoordinateSqure(point);
 
     float boundX = m_width * m_width / 4;
-    float boundY = m_height * m_height / 4;
+    float boundY = m_height * m_height;
     float boundZ = m_range * m_range / 4;
 
     if (transformPoint.x <= boundX &&

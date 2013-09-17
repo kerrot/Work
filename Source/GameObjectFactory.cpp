@@ -6,6 +6,8 @@
 #include "BasketObject.h"
 #include "WindObject.h"
 #include "ResistanceObject.h"
+#include "HandObject.h"
+#include "AvatarObject.h"
 
 using namespace irr;
 using namespace irr::scene;
@@ -14,17 +16,17 @@ using namespace irr::video;
 
 GameObjectFactory::GameObjectFactory()
 :
-m_camera(0)
+m_avatar(0)
 {
 
 }
 
 GameObjectFactory::~GameObjectFactory()
 {
-    if (m_camera)
+    if (m_avatar)
     {
-        delete m_camera;
-        m_camera = 0;
+        delete m_avatar;
+        m_avatar = 0;
     }
 
     for (std::vector<LeafObject*>::iterator iter = m_leaves.begin();
@@ -46,13 +48,23 @@ GameObjectFactory::~GameObjectFactory()
     m_collidables.clear();
 
     m_windows.clear();
+
+    for (std::map<UInt32, HandObject*>::iterator iter = m_hands.begin();
+        iter != m_hands.end();
+        ++iter)
+    {
+        HandObject* hand = iter->second;
+        delete hand;
+    }
+    m_hands.clear();
 }
 
-void GameObjectFactory::FactoryInit( ISceneManager* a_mgr )
+void GameObjectFactory::FactoryInit( ISceneManager* a_mgr, irr::video::IVideoDriver* a_driver)
 {
     m_mgr = a_mgr;
+    m_driver = a_driver;
 
-    CreateCamera();
+    CreateAvatar();
 
     LeafObject* leaf = CreateLeaf();
     leaf->SetOriposition(PMVector(0, 100, -100));
@@ -61,7 +73,7 @@ void GameObjectFactory::FactoryInit( ISceneManager* a_mgr )
     CreateResistance();
 
     CollidableObject* basket = CreateBasket();
-    basket->SetPosition(0, 0, -100);
+    basket->SetPosition(30, 0, -100);
 
     CollidableObject* wind = CreateWind();
     wind->SetPosition(0, 50, -100);
@@ -84,43 +96,28 @@ GameObjectFactory& GameObjectFactory::GetInstance()
     return m_instance;
 }
 
-GameObject* GameObjectFactory::GetCamera()
+AvatarObject* GameObjectFactory::GetAvatar()
 {
-    return m_camera;
+    return m_avatar;
 }
 
-void GameObjectFactory::CreateCamera()
+void GameObjectFactory::CreateAvatar()
 {
-    SKeyMap keyMap[9];
-    keyMap[0].Action = EKA_MOVE_FORWARD;
-    keyMap[0].KeyCode = KEY_UP;
-    keyMap[1].Action = EKA_MOVE_FORWARD;
-    keyMap[1].KeyCode = KEY_KEY_W;
+    m_avatar = new AvatarObject();
 
-    keyMap[2].Action = EKA_MOVE_BACKWARD;
-    keyMap[2].KeyCode = KEY_DOWN;
-    keyMap[3].Action = EKA_MOVE_BACKWARD;
-    keyMap[3].KeyCode = KEY_KEY_S;
-
-    keyMap[4].Action = EKA_STRAFE_LEFT;
-    keyMap[4].KeyCode = KEY_LEFT;
-    keyMap[5].Action = EKA_STRAFE_LEFT;
-    keyMap[5].KeyCode = KEY_KEY_A;
-
-    keyMap[6].Action = EKA_STRAFE_RIGHT;
-    keyMap[6].KeyCode = KEY_RIGHT;
-    keyMap[7].Action = EKA_STRAFE_RIGHT;
-    keyMap[7].KeyCode = KEY_KEY_D;
-
-    keyMap[8].Action = EKA_JUMP_UP;
-    keyMap[8].KeyCode = KEY_KEY_J;
-
-    ICameraSceneNode* cam = m_mgr->addCameraSceneNodeFPS(0, 25.0f, .1f, -1, keyMap, 9, false, 3.f);
+    ISceneNode* node = m_mgr->addSphereSceneNode(15);
+    node->setMaterialFlag(EMF_LIGHTING, false);
+    m_avatar->SetNode(node);
     
-    m_camera = new GameObject();
-    m_camera->SetNode(cam);
+    ICameraSceneNode* cam = m_mgr->addCameraSceneNode(node);
+    cam->bindTargetAndRotation(true);
+    m_avatar->m_head.SetNode(cam);
+    m_avatar->m_target.SetNode(m_mgr->addSphereSceneNode(3, 16, node));
 
-    m_camera->SetPosition(0, 0, -50);
+    m_avatar->m_target.SetPosition(0, 0, 50);
+
+    m_avatar->SetPosition(PMVector(0, 0, -50));
+    m_avatar->SetHeadPosition(PMVector(0, 100, -100));
 }
 
 LeafObject* GameObjectFactory::CreateLeaf()
@@ -128,6 +125,12 @@ LeafObject* GameObjectFactory::CreateLeaf()
     LeafObject* leaf = new LeafObject();
 
     ISceneNode* leafNode = m_mgr->addSphereSceneNode(3);
+
+//     IAnimatedMesh* mesh = m_mgr->getMesh("Resource/P.3DS");
+//     IAnimatedMeshSceneNode* leafNode = m_mgr->addAnimatedMeshSceneNode(mesh);
+//     leafNode->setMaterialFlag(EMF_LIGHTING, false);
+//     leafNode->setMaterialTexture( 0, m_driver->getTexture("Resource/water.jpg") );
+//     leafNode->setScale(vector3df(40, 30, 20));
 
     leaf->SetNode(leafNode);
 
@@ -159,15 +162,20 @@ CollidableObject* GameObjectFactory::CreateBasket()
 }
 
 CollidableObject* GameObjectFactory::CreateWind()
-{
-    ISceneNode* node = m_mgr->addCubeSceneNode(1);
-    node->setRotation(vector3df(3.1416 * 2, 0, 0));
+{ 
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/P.3DS");
+    IAnimatedMeshSceneNode* windNode = m_mgr->addAnimatedMeshSceneNode(mesh);
+    windNode->setMaterialFlag(EMF_LIGHTING, false);
+    windNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+    windNode->setMaterialTexture( 0, m_driver->getTexture("Resource/wind.jpg") );
 
+    ISceneNode* node = m_mgr->addCubeSceneNode(1, windNode);
+    node->setPosition(vector3df(0, 0.5, 0));
     SMaterial &m = node->getMaterial(0);
     m.Wireframe = true;
 
     WindObject* wind = new WindObject();
-    wind->SetNode(node);
+    wind->SetNode(windNode);
 
     float width = 10, height = 10, range = 10;
     wind->Resize(width, height);
@@ -177,4 +185,50 @@ CollidableObject* GameObjectFactory::CreateWind()
     m_windows[wind->GetId()] = wind;
 
     return wind;
+}
+
+WindowInterface* GameObjectFactory::GetWindowByID( UInt32 a_id )
+{
+    std::map<UInt32, WindowInterface*>::iterator iter = m_windows.find(a_id);
+    if (iter != m_windows.end())
+    {
+        return iter->second;
+    }
+
+    return 0; 
+}
+
+HandObject* GameObjectFactory::GetorCreateHand( UInt32 a_id )
+{
+    std::map<UInt32, HandObject*>::iterator iter = m_hands.find(a_id);
+    if (iter != m_hands.end())
+    {
+        return iter->second;
+    }
+
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/Hand.3DS");
+    IAnimatedMeshSceneNode* node = m_mgr->addAnimatedMeshSceneNode(mesh, m_avatar->m_node);
+    node->setScale(vector3df(10, 5, 10));
+
+    HandObject* hand = new HandObject(a_id);
+    hand->SetNode(node);
+
+    for (int i = 0; i < MAX_FINGERS; ++i)
+    {
+        hand->m_fingles[i].SetNode(m_mgr->addSphereSceneNode(5, 16, m_avatar->m_node));
+    }
+
+    m_hands[a_id] = hand;
+
+    return hand;
+}
+
+void GameObjectFactory::HideAllHand()
+{
+    for (std::map<UInt32, HandObject*>::iterator iter = m_hands.begin();
+        iter != m_hands.end();
+        ++iter)
+    {
+        iter->second->SetVisible(false);
+    }
 }

@@ -5,6 +5,7 @@
 #include "GameObjectFactory.h"
 #include "LeapDevice.h"
 #include "COVRSceneManagerDecorator.h"
+#include "AvatarObject.h"
 
 #include <assert.h>
 
@@ -46,17 +47,62 @@ bool PrimateMurder::OnEvent(const SEvent& event)
             m_device->closeDevice();
             result = true;
             break;
+        case KEY_KEY_W:
+            {
+                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+                avatar->Forward();
+            }
+            break;
+        case KEY_KEY_S:
+            {
+                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+                avatar->Backward();
+            }
+            break;
+        case KEY_KEY_A:
+            {
+                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+                avatar->Leftward();
+            }
+            break;
+        case KEY_KEY_D:
+            {
+                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+                avatar->Rightward();
+            }
+            break;
         case KEY_KEY_X:
-            m_light->setPosition(m_light->getPosition() + vector3df(0,10,0));
+            {
+                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+                avatar->Downward();
+            }
             break;
         case KEY_SPACE:
-            m_light->setPosition(m_light->getPosition() + vector3df(0,-10,0));
+            {
+                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+                avatar->Upward();
+            }
+            break;
+        case KEY_KEY_Q:
+            {
+                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+                avatar->TurnLeft();
+            }
+            break;
+        case KEY_KEY_E:
+            {
+                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+                avatar->TurnRight();
+            }
+            break;
+        case KEY_KEY_T:
+            m_leap->TrackHeadPosition();
             break;
         }
     }
 
     // passing down the event
-    return result || m_world->OnEvent(event);
+    return result;
 }
 
 void PrimateMurder::Init()
@@ -68,7 +114,7 @@ void PrimateMurder::Init()
     SIrrlichtCreationParameters params;
     params.DriverType = EDT_OPENGL;
     params.WindowSize = dimension2d<u32>(SCREEN_WIDTH, SCREEN_HEIGHT);
-    params.Fullscreen = true;
+    params.Fullscreen = false;
     params.EventReceiver = this;
     m_device = createDeviceEx(params);
     m_device->getCursorControl()->setVisible(false);
@@ -81,11 +127,11 @@ void PrimateMurder::Init()
 
     m_driver = m_device->getVideoDriver();
     m_smgr = m_device->getSceneManager();
-    m_smgr = new COVRSceneManagerDecorator(m_smgr);
+    //m_smgr = new COVRSceneManagerDecorator(m_smgr);
     m_env = m_device->getGUIEnvironment();
 
     m_world->WorldInit();
-    sGameObjectFactory.FactoryInit(m_smgr);
+    sGameObjectFactory.FactoryInit(m_smgr, m_driver);
 
     SetupWorld();
 }

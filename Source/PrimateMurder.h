@@ -6,7 +6,8 @@ namespace irr
 {
     class IrrlichtDevice;
     struct SEvent;
-    
+    enum EKEY_CODE;
+
     namespace video
     {
         class IVideoDriver;
@@ -24,11 +25,13 @@ namespace irr
     }
 }
 
+using namespace irr;
+
 class GameWorld;
 class GamePhysics;
 class LeapDevice;
 
-class PrimateMurder : public irr::IEventReceiver
+class PrimateMurder : public IEventReceiver
 {
 public:
     PrimateMurder();
@@ -43,14 +46,19 @@ private:
     void Init();
     void SetupWorld();
 
+    void OnKeyDown(EKEY_CODE a_key);
+    void OnKeyUp(EKEY_CODE a_key);
+
     GameWorld* m_world;
     GamePhysics* m_physics;
     LeapDevice* m_leap;
 
-    irr::IrrlichtDevice* m_device;
-    irr::video::IVideoDriver* m_driver;
-    irr::scene::ISceneManager* m_smgr;
-    irr::gui::IGUIEnvironment* m_env;
+    IrrlichtDevice* m_device;
+    video::IVideoDriver* m_driver;
+    scene::ISceneManager* m_smgr;
+    gui::IGUIEnvironment* m_env;
 
-    irr::scene::ILightSceneNode* m_light;
+    scene::ILightSceneNode* m_light;
+
+    bool KeyIsDown[KEY_KEY_CODES_COUNT];
 };

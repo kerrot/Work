@@ -7,3 +7,5 @@ typedef uint64_t UInt64;
 
 #include <vector>
 #include <map>
+
+#define PM_PI 3.14159265359f

@@ -25,6 +25,16 @@ struct PMVector
         return x * a_v.x + y * a_v.y + z * a_v.z;
     }
 
+    PMVector CrossProduct(PMVector a_v)
+    {
+        return PMVector(y * a_v.z - z * a_v.y, z * a_v.x - x * a_v.z, x * a_v.y - y * a_v.x);
+    }
+
+    float MagnitudeSquared()
+    {
+        return x * x + y * y + z * z;
+    }
+
     float x;
     float y;
     float z;

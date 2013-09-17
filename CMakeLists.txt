@@ -79,6 +79,9 @@ add_executable (
   ${CMAKE_SOURCE_DIR}/Source/WindObject.cpp
   ${CMAKE_SOURCE_DIR}/Source/WindowInterface.cpp
   ${CMAKE_SOURCE_DIR}/Source/CollidableObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/AvatarObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/HandObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/HeadObject.cpp
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")

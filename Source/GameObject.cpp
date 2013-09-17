@@ -20,7 +20,7 @@ GameObject::~GameObject()
 
 }
 
-void GameObject::SetVisible( bool a_result ) const
+void GameObject::SetVisible( bool a_result )
 {
     if (m_node)
     {
@@ -28,7 +28,7 @@ void GameObject::SetVisible( bool a_result ) const
     }
 }
 
-void GameObject::SetPosition( float a_x, float a_y, float a_z ) const
+void GameObject::SetPosition( float a_x, float a_y, float a_z )
 {
     if (m_node)
     {
@@ -36,7 +36,7 @@ void GameObject::SetPosition( float a_x, float a_y, float a_z ) const
     }
 }
 
-void GameObject::SetPosition( PMVector a_position ) const
+void GameObject::SetPosition( PMVector a_position )
 {
     if (m_node)
     {
@@ -44,7 +44,7 @@ void GameObject::SetPosition( PMVector a_position ) const
     }
 }
 
-void GameObject::SetRotation( float a_x, float a_y, float a_z ) const
+void GameObject::SetRotation( float a_x, float a_y, float a_z )
 {
     if (m_node)
     {
@@ -52,7 +52,7 @@ void GameObject::SetRotation( float a_x, float a_y, float a_z ) const
     }
 }
 
-void GameObject::SetRotation( PMVector a_rotation ) const
+void GameObject::SetRotation( PMVector a_rotation )
 {
     if (m_node)
     {
@@ -66,7 +66,7 @@ void GameObject::SetNode( irr::scene::ISceneNode* a_node )
     assert(m_node);
 }
 
-PMVector GameObject::GetPosition() const
+PMVector GameObject::GetPosition()
 {
     vector3df position;
 
@@ -78,7 +78,7 @@ PMVector GameObject::GetPosition() const
     return PMVector(position.X, position.Y, position.Z);
 }
 
-void GameObject::SetScale( PMVector a_scale ) const
+void GameObject::SetScale( PMVector a_scale )
 {
     if (m_node)
     {
@@ -101,5 +101,29 @@ void GameObject::SetScale( PMVector a_scale ) const
 
         m_node->setScale(vector3df(a_scale.x, a_scale.y, a_scale.z));
     }
+}
+
+PMVector GameObject::GetRotation()
+{
+    vector3df rotation;
+
+    if (m_node)
+    {
+        rotation = m_node->getRotation();
+    }
+
+    return PMVector(rotation.X, rotation.Y, rotation.Z);
+}
+
+PMVector GameObject::GetAbsolutePosition()
+{
+    vector3df position;
+
+    if (m_node)
+    {
+        position = m_node->getAbsolutePosition();
+    }
+
+    return PMVector(position.X, position.Y, position.Z);
 }
 

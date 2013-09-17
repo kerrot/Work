@@ -15,6 +15,8 @@ public:
     virtual void ChangeRange(float &a_range);
     UInt32 GetId();
 
+    void SetNormalDirection(PMVector a_normal, PMVector a_planeVectorX);
+
 protected:
     WindowInterface(GameObject* a_object);
     virtual ~WindowInterface();
