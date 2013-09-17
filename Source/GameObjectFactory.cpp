@@ -163,7 +163,7 @@ CollidableObject* GameObjectFactory::CreateBasket()
 
 CollidableObject* GameObjectFactory::CreateWind()
 { 
-    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/P.3DS");
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/Plane.3DS");
     IAnimatedMeshSceneNode* windNode = m_mgr->addAnimatedMeshSceneNode(mesh);
     windNode->setMaterialFlag(EMF_LIGHTING, false);
     windNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);

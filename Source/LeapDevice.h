@@ -5,6 +5,7 @@ namespace Leap
 {
     class Controller;
     class Frame;
+    class Hand;
 }
 
 class LeapDevice
@@ -19,6 +20,8 @@ public:
 private:
     void UpdateHead(const Leap::Frame &a_frame);
     void UpdateHands(const Leap::Frame &a_frame);
+
+    void InterAction(const Leap::Hand &a_hand);
 
     Leap::Controller* m_controller;
 
