@@ -20,9 +20,14 @@ enum DEVICE_SETTING
 {
     SCREEN_WIDTH                = 1280,
     SCREEN_HEIGHT               = 800,
+    CENTER_X                    = 640,
+    CENTER_Y                    = 400,
 };
 
 PrimateMurder::PrimateMurder()
+:
+m_lastMouseX(CENTER_X)
+,m_lastMouseY(CENTER_Y)
 {
     Init();
 }
@@ -101,6 +106,20 @@ bool PrimateMurder::OnEvent(const SEvent& event)
         }
     }
 
+    if (event.EventType == irr::EET_MOUSE_INPUT_EVENT && event.MouseInput.Event == EMIE_MOUSE_MOVED)
+    {
+        PMVector rotation;
+
+        rotation.y = float(event.MouseInput.X - m_lastMouseX) / CENTER_X * 180;
+        rotation.x = float(event.MouseInput.Y - m_lastMouseY) / CENTER_Y * 180;
+
+        m_lastMouseX = event.MouseInput.X;
+        m_lastMouseY = event.MouseInput.Y;
+
+        AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+        avatar->LookRotate(rotation);
+    }
+
     // passing down the event
     return result;
 }
@@ -140,6 +159,10 @@ void PrimateMurder::Run()
 {
     while (m_device->run())
     {
+        m_device->getCursorControl()->setPosition(CENTER_X, CENTER_Y);
+        m_lastMouseX = CENTER_X;
+        m_lastMouseY = CENTER_Y;
+
         m_leap->LeapUpdate();
         m_world->WorldUpdate();
         m_physics->PhysicsUpdate();

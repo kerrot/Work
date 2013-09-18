@@ -24,6 +24,11 @@ public:
     PMVector GetPosition();
     PMVector GetAbsolutePosition();
     PMVector GetRotation();
+    PMVector GetAbsoluteRotation();
+
+    void SetColor(char a_r, char a_g, char a_b, char a_a);
+
+    static void RotationToDirection(PMVector &a_vector, PMVector a_rotation);
 
 protected:
     friend class GameObjectFactory;

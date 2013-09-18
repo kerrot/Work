@@ -7,6 +7,7 @@
 using namespace irr;
 using namespace scene;
 using namespace core;
+using namespace video;
 
 GameObject::GameObject()
 :
@@ -127,3 +128,36 @@ PMVector GameObject::GetAbsolutePosition()
     return PMVector(position.X, position.Y, position.Z);
 }
 
+void GameObject::RotationToDirection( PMVector &a_vector, PMVector a_rotation)
+{
+    vector3df rotation(a_rotation.x, a_rotation.y, a_rotation.z);
+    vector3df v = rotation.rotationToDirection(vector3df(a_vector.x, a_vector.y, a_vector.z));
+
+    a_vector.x = v.X;
+    a_vector.y = v.Y;
+    a_vector.z = v.Z;
+}
+
+PMVector GameObject::GetAbsoluteRotation()
+{
+    vector3df rotation;
+
+    if (m_node)
+    {
+        const core::matrix4& matrix = m_node->getAbsoluteTransformation();
+        
+        rotation = matrix.getRotationDegrees();
+    }
+
+    return PMVector(rotation.X, rotation.Y, rotation.Z);
+}
+
+void GameObject::SetColor( char a_r, char a_g, char a_b, char a_a )
+{
+    if (m_node)
+    {
+        SMaterial &m = m_node->getMaterial(0);
+
+        m.EmissiveColor = SColor(a_a, a_r, a_g, a_b);
+    }
+}

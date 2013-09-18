@@ -12,8 +12,8 @@ m_object(a_object)
 ,m_planeVectorX(1, 0, 0)
 ,m_planeVectorY(0, 0, 1)
 ,m_id(++m_idNow)
-,m_width(10)
-,m_height(10)
+,m_width(MAX_VELOCITY)
+,m_height(MAX_VELOCITY)
 {    
     assert(m_object);
 }
@@ -28,7 +28,7 @@ void WindowInterface::Resize( float &a_width, float &a_height )
     a_width = (a_width < MAX_VELOCITY) ? MAX_VELOCITY : a_width;
     a_height = (a_height < MAX_VELOCITY) ? MAX_VELOCITY : a_height;
 
-    m_object->SetScale(PMVector(m_width, m_height, 0));
+    m_object->SetScale(PMVector(m_width, 0, m_height));
 }
 
 UInt32 WindowInterface::GetId()
@@ -38,7 +38,7 @@ UInt32 WindowInterface::GetId()
 
 PMVector WindowInterface::GetProjectionPoint( PMVector a_point )
 {
-    PMVector position = m_object->GetPosition();
+    PMVector position = m_object->GetAbsolutePosition();
 
     float k = (m_normal.x * (position.x - a_point.x) + m_normal.y * (position.y - a_point.y) + m_normal.z * (position.z - a_point.z)) / (m_normal.MagnitudeSquared());
 
@@ -47,7 +47,7 @@ PMVector WindowInterface::GetProjectionPoint( PMVector a_point )
 
 PMVector WindowInterface::TransformByCoordinateSqure( PMVector a_point )
 {
-    PMVector position = m_object->GetPosition();
+    PMVector position = m_object->GetAbsolutePosition();
     float normalRate = (m_normal.x * (position.x - a_point.x) + m_normal.y * (position.y - a_point.y) + m_normal.z * (position.z - a_point.z)) / (m_normal.MagnitudeSquared());
     float vectorXRate = (m_planeVectorX.x * (position.x - a_point.x) + m_planeVectorX.y * (position.y - a_point.y) + m_planeVectorX.z * (position.z - a_point.z)) / (m_planeVectorX.MagnitudeSquared());
     float vectorYRate = (m_planeVectorY.x * (position.x - a_point.x) + m_planeVectorY.y * (position.y - a_point.y) + m_planeVectorY.z * (position.z - a_point.z)) / (m_planeVectorY.MagnitudeSquared());
@@ -64,9 +64,45 @@ void WindowInterface::ChangeRange( float &a_range )
 
 }
 
-void WindowInterface::SetNormalDirection( PMVector a_normal, PMVector a_planeVectorX )
+void WindowInterface::SetNormalDirection( PMVector a_normal, PMVector a_planeVectorX, PMVector a_planeVectorY )
 {
-    m_object->SetRotation(a_normal);
+    m_normal = a_normal;
+    m_planeVectorX = a_planeVectorX;
+    m_planeVectorY = a_planeVectorY;
+}
+
+GameObject* WindowInterface::GetObject()
+{
+    return m_object;
+}
+
+WindowDistanceType WindowInterface::PointToWindowDistanceType( PMVector a_point )
+{
+    PMVector dis = TransformByCoordinateSqure(a_point);
+
+    if (dis.x <= (m_width * m_width / 4) && dis.y <= (m_height * m_height / 4))
+    {
+        if (dis.z == 0)
+        {
+            return WINDOW_DISTANCE_ON_PLANE;
+        }
+        else if (dis.z < ATTACH_DISTANCE_SQUARE)
+        {
+            return WINDOW_DISTANCE_ATTACH;
+        }
+        else if (dis.z < NEAR_DISTANCE_SQUARE)
+        {
+            return WINDOW_DISTANCE_NEAR;
+        }
+        else
+        {
+            return WINDOW_DISTANCE_FAR;
+        }
+    }
+    else
+    {
+        return WINDOW_DISTANCE_FAR;
+    }
 }
 
 

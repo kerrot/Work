@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PMCommon.h"
 #include <IEventReceiver.h>
 
 namespace irr
@@ -59,6 +60,9 @@ private:
     gui::IGUIEnvironment* m_env;
 
     scene::ILightSceneNode* m_light;
+
+    Int32 m_lastMouseX;
+    Int32 m_lastMouseY;
 
     bool KeyIsDown[KEY_KEY_CODES_COUNT];
 };

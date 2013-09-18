@@ -8,6 +8,7 @@
 #include "ResistanceObject.h"
 #include "HandObject.h"
 #include "AvatarObject.h"
+#include "PMDefine.h"
 
 using namespace irr;
 using namespace irr::scene;
@@ -67,7 +68,7 @@ void GameObjectFactory::FactoryInit( ISceneManager* a_mgr, irr::video::IVideoDri
     CreateAvatar();
 
     LeafObject* leaf = CreateLeaf();
-    leaf->SetOriposition(PMVector(0, 100, -100));
+    leaf->SetOriposition(PMVector(0, 200, -100));
 
     CreateGravity();
     CreateResistance();
@@ -110,14 +111,13 @@ void GameObjectFactory::CreateAvatar()
     m_avatar->SetNode(node);
     
     ICameraSceneNode* cam = m_mgr->addCameraSceneNode(node);
-    cam->bindTargetAndRotation(true);
     m_avatar->m_head.SetNode(cam);
     m_avatar->m_target.SetNode(m_mgr->addSphereSceneNode(3, 16, node));
 
     m_avatar->m_target.SetPosition(0, 0, 50);
 
     m_avatar->SetPosition(PMVector(0, 0, -50));
-    m_avatar->SetHeadPosition(PMVector(0, 100, -100));
+    m_avatar->SetHeadPosition(PMVector(0, 100, -200));
 }
 
 LeafObject* GameObjectFactory::CreateLeaf()
@@ -152,7 +152,7 @@ void GameObjectFactory::CreateResistance()
 CollidableObject* GameObjectFactory::CreateBasket()
 {
     ISceneNode* node = m_mgr->addCubeSceneNode(30);
-
+    
     BasketObject* basket = new BasketObject();
     basket->SetNode(node);
 
@@ -177,7 +177,7 @@ CollidableObject* GameObjectFactory::CreateWind()
     WindObject* wind = new WindObject();
     wind->SetNode(windNode);
 
-    float width = 10, height = 10, range = 10;
+    float width = MAX_VELOCITY, height = MAX_VELOCITY, range = MAX_VELOCITY;
     wind->Resize(width, height);
     wind->ChangeRange(range);
 
@@ -209,9 +209,11 @@ HandObject* GameObjectFactory::GetorCreateHand( UInt32 a_id )
     IAnimatedMesh* mesh = m_mgr->getMesh("Resource/Hand.3DS");
     IAnimatedMeshSceneNode* node = m_mgr->addAnimatedMeshSceneNode(mesh, m_avatar->m_node);
     node->setScale(vector3df(10, 5, 10));
+    node->setMaterialFlag(EMF_WIREFRAME, true);
 
     HandObject* hand = new HandObject(a_id);
     hand->SetNode(node);
+    hand->SetColor(255, 255, 255, 0);
 
     for (int i = 0; i < MAX_FINGERS; ++i)
     {
@@ -231,4 +233,9 @@ void GameObjectFactory::HideAllHand()
     {
         iter->second->SetVisible(false);
     }
+}
+
+std::map<UInt32, WindowInterface*>& GameObjectFactory::GetWindows()
+{
+    return m_windows;
 }

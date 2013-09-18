@@ -37,6 +37,7 @@ public:
     AvatarObject* GetAvatar();
     std::vector<LeafObject*>& GetLeaves();
     std::vector<CollidableObject*>& GetCollidables();
+    std::map<UInt32, WindowInterface*>& GetWindows();
 
     void HideAllHand();
 
