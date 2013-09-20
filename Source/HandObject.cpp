@@ -95,6 +95,16 @@ void HandObject::SetRotation( PMVector a_rotation )
     }
 }
 
+PMVector HandObject::GetFingerAbsolutePosition( int a_index )
+{
+    if (a_index >= 0 && a_index < MAX_FINGERS)
+    {
+        return m_fingles[a_index].GetAbsolutePosition();
+    }
+
+    return PMVector();
+}
+
 // void HandObject::SetNormalDirection( PMVector a_normal, PMVector a_direction )
 // {
 //     PMVector tmp = a_normal.CrossProduct(a_direction);

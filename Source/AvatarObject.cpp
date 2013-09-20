@@ -62,7 +62,22 @@ void AvatarObject::SetPosition( PMVector a_position )
 
 void AvatarObject::LookRotate(PMVector a_rotation)
 {
-    m_lookRotation += a_rotation;    
+    m_lookRotation += a_rotation;
+
+    if (m_lookRotation.x > 0)
+    {
+        if (m_lookRotation.x > 85)
+        {
+            m_lookRotation.x = 85;
+        }
+    }
+    else
+    {
+        if (m_lookRotation.x < -85)
+        {
+            m_lookRotation.x = -85;
+        }
+    }
 
     UpdateHeadLookAt();
 }

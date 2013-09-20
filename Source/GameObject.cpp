@@ -157,7 +157,6 @@ void GameObject::SetColor( char a_r, char a_g, char a_b, char a_a )
     if (m_node)
     {
         SMaterial &m = m_node->getMaterial(0);
-
         m.EmissiveColor = SColor(a_a, a_r, a_g, a_b);
     }
 }

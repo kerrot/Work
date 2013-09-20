@@ -18,6 +18,7 @@ public:
     virtual void SetVisible(bool a_result);
 
     WindowInterface* GetAttachedWindow();
+    PMVector GetFingerAbsolutePosition(int a_index);
     void AttachWindow(WindowInterface* a_window);
 
     virtual void SetPosition(PMVector a_position);

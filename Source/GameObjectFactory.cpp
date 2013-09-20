@@ -114,7 +114,7 @@ void GameObjectFactory::CreateAvatar()
     m_avatar->m_head.SetNode(cam);
     m_avatar->m_target.SetNode(m_mgr->addSphereSceneNode(3, 16, node));
 
-    m_avatar->m_target.SetPosition(0, 0, 50);
+    m_avatar->m_target.SetPosition(0, 100, 50);
 
     m_avatar->SetPosition(PMVector(0, 0, -50));
     m_avatar->SetHeadPosition(PMVector(0, 100, -200));
@@ -210,14 +210,16 @@ HandObject* GameObjectFactory::GetorCreateHand( UInt32 a_id )
     IAnimatedMeshSceneNode* node = m_mgr->addAnimatedMeshSceneNode(mesh, m_avatar->m_node);
     node->setScale(vector3df(10, 5, 10));
     node->setMaterialFlag(EMF_WIREFRAME, true);
+    
 
     HandObject* hand = new HandObject(a_id);
     hand->SetNode(node);
-    hand->SetColor(255, 255, 255, 0);
 
     for (int i = 0; i < MAX_FINGERS; ++i)
     {
-        hand->m_fingles[i].SetNode(m_mgr->addSphereSceneNode(5, 16, m_avatar->m_node));
+        ISceneNode* finger = m_mgr->addSphereSceneNode(5, 5, m_avatar->m_node);
+        finger->setMaterialFlag(EMF_WIREFRAME, true);
+        hand->m_fingles[i].SetNode(finger);
     }
 
     m_hands[a_id] = hand;

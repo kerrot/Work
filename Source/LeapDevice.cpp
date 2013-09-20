@@ -104,6 +104,8 @@ void LeapDevice::UpdateHands( const Leap::Frame &a_frame )
 {
     if (!a_frame.hands().isEmpty())
     {
+        std::map<UInt32, PMVector> fingerData;
+
         for (int i = 0; i < a_frame.hands().count(); ++i)
         {
             const Hand hand = a_frame.hands()[i];
@@ -131,12 +133,23 @@ void LeapDevice::UpdateHands( const Leap::Frame &a_frame )
                     const Finger finger = fingers[j];
                     Vector tipPos = finger.tipPosition();
                     handObject->SetFingerPosition(j, PMVector(tipPos.x, tipPos.y, -tipPos.z));
+
+                    fingerData[finger.id()] = handObject->GetFingerAbsolutePosition(j);
                 }
                 else
                 {
                     handObject->HideFingler(j);
                 }
             }
+        }
+
+        std::map<UInt32, WindowInterface*>& windows = sGameObjectFactory.GetWindows();
+        for (std::map<UInt32, WindowInterface*>::iterator iter = windows.begin();
+            iter != windows.end();
+            ++iter)
+        {
+            WindowInterface* window = iter->second;
+            window->UpdateFingers(fingerData);
         }
     }
 }

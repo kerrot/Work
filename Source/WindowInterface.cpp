@@ -14,6 +14,8 @@ m_object(a_object)
 ,m_id(++m_idNow)
 ,m_width(MAX_VELOCITY)
 ,m_height(MAX_VELOCITY)
+,m_state(WINDOW_STATE_NORMAL)
+,m_resizeFingerID(0)
 {    
     assert(m_object);
 }
@@ -25,8 +27,8 @@ WindowInterface::~WindowInterface()
 
 void WindowInterface::Resize( float &a_width, float &a_height )
 {
-    a_width = (a_width < MAX_VELOCITY) ? MAX_VELOCITY : a_width;
-    a_height = (a_height < MAX_VELOCITY) ? MAX_VELOCITY : a_height;
+    m_width = (a_width < MAX_VELOCITY) ? MAX_VELOCITY : a_width;
+    m_height = (a_height < MAX_VELOCITY) ? MAX_VELOCITY : a_height;
 
     m_object->SetScale(PMVector(m_width, 0, m_height));
 }
@@ -103,6 +105,68 @@ WindowDistanceType WindowInterface::PointToWindowDistanceType( PMVector a_point 
     {
         return WINDOW_DISTANCE_FAR;
     }
+}
+
+void WindowInterface::UpdateFingers( std::map<UInt32, PMVector>& a_data )
+{
+    WindowFingerData data;
+    for (std::map<UInt32, PMVector>::iterator iter = a_data.begin();
+        iter != a_data.end();
+        ++iter)
+    {
+        PMVector distance = TransformByCoordinateSqure(iter->second);
+        if (distance.z < WINDOW_DISTANCE_ATTACH)
+        {
+            data[iter->first] = std::pair<float, float>(distance.x, distance.y);
+        }
+        else if (iter->first == m_resizeFingerID && distance.z < WINDOW_DISTANCE_NEAR)
+        {
+            data[iter->first] = std::pair<float, float>(distance.x, distance.y);
+        }
+    }
+
+    switch (m_state)
+    {
+    case WINDOW_STATE_NORMAL:
+        {
+            for (WindowFingerData::iterator iter = data.begin();
+                iter != data.end();
+                ++iter)
+            {
+                if (abs(iter->second.first - m_width * m_width / 4) < FINGER_CLICK_DISTANCE_SQUARE &&
+                    abs(iter->second.second - m_height * m_height / 4) < FINGER_CLICK_DISTANCE_SQUARE)
+                {
+                    m_state = WINDOW_STATE_RESIZING;
+                    m_resizeFingerID = iter->first;
+                    break;
+                }
+            }
+        }
+        break;
+    case WINDOW_STATE_RESIZING:
+        {
+            WindowFingerData::iterator iter = data.find(m_resizeFingerID);
+            if (iter != data.end())
+            {
+                float width = sqrt(iter->second.first) * 2;
+                float height = sqrt(iter->second.second) * 2;
+                Resize(width, height);
+            }
+            else
+            {
+                m_resizeFingerID = 0;
+                m_state = WINDOW_STATE_NORMAL;
+            }
+        }
+        break;
+    case WINDOW_STATE_SCALING:
+        break;
+    default:
+        break;
+    }
+
+    m_lastFingerData.clear();
+    m_lastFingerData = data;
 }
 
 
