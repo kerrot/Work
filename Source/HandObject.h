@@ -3,6 +3,8 @@
 #include "PMCommon.h"
 #include "PMType.h"
 
+using namespace PMTypeDefine;
+
 enum HandSetting
 {
     MAX_FINGERS                 = 5,
@@ -20,6 +22,7 @@ public:
     WindowInterface* GetAttachedWindow();
     PMVector GetFingerAbsolutePosition(int a_index);
     void AttachWindow(WindowInterface* a_window);
+    UInt32 GetId();
 
     virtual void SetPosition(PMVector a_position);
     virtual void SetRotation(PMVector a_rotation);

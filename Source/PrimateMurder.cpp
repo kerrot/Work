@@ -6,6 +6,7 @@
 #include "LeapDevice.h"
 #include "COVRSceneManagerDecorator.h"
 #include "AvatarObject.h"
+#include "GameTime.h"
 
 #include <assert.h>
 
@@ -148,9 +149,11 @@ void PrimateMurder::Init()
     m_smgr = m_device->getSceneManager();
     //m_smgr = new COVRSceneManagerDecorator(m_smgr);
     m_env = m_device->getGUIEnvironment();
+    InitTexture();
 
     m_world->WorldInit();
     sGameObjectFactory.FactoryInit(m_smgr, m_driver);
+    sGameTime.Init(m_device->getTimer());
 
     SetupWorld();
 }
@@ -159,6 +162,8 @@ void PrimateMurder::Run()
 {
     while (m_device->run())
     {
+        m_device->getTimer();
+
         m_device->getCursorControl()->setPosition(CENTER_X, CENTER_Y);
         m_lastMouseX = CENTER_X;
         m_lastMouseY = CENTER_Y;
@@ -190,13 +195,9 @@ void PrimateMurder::SetupWorld()
 
     m_driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
-    IAnimatedMesh* mesh = m_smgr->getMesh("Resource/maple.obj");
+    IAnimatedMesh* mesh = m_smgr->getMesh("Resource/maple.3ds");
     IAnimatedMeshSceneNode* tree = m_smgr->addAnimatedMeshSceneNode(mesh);
-    if (tree)
-    {
-        SMaterial &treem = tree->getMaterial(6);
-        treem.BackfaceCulling = false;
-    }
+    tree->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
 
     ISceneNode* ground = m_smgr->addSphereSceneNode(1000, 256);
     ground->setPosition(core::vector3df(0, -1000, 0));
@@ -207,4 +208,13 @@ void PrimateMurder::SetupWorld()
                                         vector3df(0, 1100, 0), 
                                         SColorf(0.7f, 1.0f, 1.0f, 0.0f), 
                                         1000);
+}
+
+void PrimateMurder::InitTexture()
+{
+    GameObject::SetTexture(TEXTURE_NONE, 0);
+    GameObject::SetTexture(TEXTURE_WIND, m_driver->getTexture("Resource/wind.jpg"));
+    GameObject::SetTexture(TEXTURE_PLANE_SHADOW, m_driver->getTexture("Resource/s.png"));
+    GameObject::SetTexture(TEXTURE_MOVE, m_driver->getTexture("Resource/Move.png"));
+    GameObject::SetTexture(TEXTURE_RESIZE, m_driver->getTexture("Resource/Resize.png"));
 }

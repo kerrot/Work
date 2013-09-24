@@ -82,6 +82,7 @@ add_executable (
   ${CMAKE_SOURCE_DIR}/Source/AvatarObject.cpp
   ${CMAKE_SOURCE_DIR}/Source/HandObject.cpp
   ${CMAKE_SOURCE_DIR}/Source/HeadObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/GameTime.cpp
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")

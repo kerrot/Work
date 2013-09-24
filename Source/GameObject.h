@@ -1,4 +1,5 @@
 #pragma once
+#include "PMCommon.h"
 
 namespace irr
 {
@@ -6,9 +7,24 @@ namespace irr
     {
         class ISceneNode;
     }
+
+    namespace video
+    {
+        class ITexture;
+    }
 }
 
 struct PMVector;
+
+enum GameObjectTexture
+{
+    TEXTURE_NONE,
+    TEXTURE_WIND,
+    TEXTURE_PLANE_SHADOW,
+    TEXTURE_MOVE,
+    TEXTURE_RESIZE,
+    MAX_TEXTURE,
+};
 
 class GameObject
 {
@@ -25,16 +41,20 @@ public:
     PMVector GetAbsolutePosition();
     PMVector GetRotation();
     PMVector GetAbsoluteRotation();
+    PMVector GetScale();
 
     void SetColor(char a_r, char a_g, char a_b, char a_a);
 
+    void ChangeTexture(GameObjectTexture a_index);
+
     static void RotationToDirection(PMVector &a_vector, PMVector a_rotation);
+    static void SetTexture(GameObjectTexture a_index, irr::video::ITexture* a_texture);
 
 protected:
     friend class GameObjectFactory;
     friend class HandObject;
     friend class AvatarObject;
-    
+
     GameObject();
     void SetNode(irr::scene::ISceneNode* a_node);
     virtual ~GameObject();

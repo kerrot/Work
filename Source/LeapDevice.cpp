@@ -104,6 +104,7 @@ void LeapDevice::UpdateHands( const Leap::Frame &a_frame )
 {
     if (!a_frame.hands().isEmpty())
     {
+        std::map<UInt32, HandObject*> handData;
         std::map<UInt32, PMVector> fingerData;
 
         for (int i = 0; i < a_frame.hands().count(); ++i)
@@ -119,12 +120,11 @@ void LeapDevice::UpdateHands( const Leap::Frame &a_frame )
             float rotationY = hand.direction().yaw();
             float rotationZ = hand.palmNormal().roll();
 
-            //handObject->SetNormalDirection(PMVector(-palmNormal.x, -palmNormal.y, palmNormal.z), PMVector(palmDirection.x, palmDirection.y, -palmDirection.z));
             handObject->SetRotation(PMVector(rotationX / PI * 180, rotationY / PI * 180, rotationZ / PI * 180));
             
-            const FingerList fingers = hand.fingers();
+            handData[(UInt32)hand.id()] = handObject;
 
-            InterAction(hand, handObject);
+            const FingerList fingers = hand.fingers();
             
             for (int j = 0; j < MAX_FINGERS; ++j)
             {
@@ -149,33 +149,16 @@ void LeapDevice::UpdateHands( const Leap::Frame &a_frame )
             ++iter)
         {
             WindowInterface* window = iter->second;
-            window->UpdateFingers(fingerData);
+            window->UpdateHands(handData);
         }
-    }
-}
 
-void LeapDevice::InterAction(const Leap::Hand &a_hand, HandObject *a_handObject)
-{
-    if (a_handObject->GetAttachedWindow())
-    {
-        if (a_hand.fingers().count() == 0)
-        {
-            a_handObject->AttachWindow(0);
-        }
-    }
-    else if (a_hand.fingers().count() > 0)
-    {
-        std::map<UInt32, WindowInterface*>& windows = sGameObjectFactory.GetWindows();
+
         for (std::map<UInt32, WindowInterface*>::iterator iter = windows.begin();
             iter != windows.end();
             ++iter)
         {
             WindowInterface* window = iter->second;
-            if (window->PointToWindowDistanceType(a_handObject->GetAbsolutePosition()) == WINDOW_DISTANCE_ATTACH)
-            {
-                a_handObject->AttachWindow(window);
-                return;
-            }
+            window->UpdateFingers(fingerData);
         }
     }
 }

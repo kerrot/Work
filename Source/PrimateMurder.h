@@ -3,6 +3,8 @@
 #include "PMCommon.h"
 #include <IEventReceiver.h>
 
+
+
 namespace irr
 {
     class IrrlichtDevice;
@@ -46,6 +48,7 @@ public:
 private:
     void Init();
     void SetupWorld();
+    void InitTexture();
 
     void OnKeyDown(EKEY_CODE a_key);
     void OnKeyUp(EKEY_CODE a_key);

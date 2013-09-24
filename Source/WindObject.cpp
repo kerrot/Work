@@ -2,9 +2,9 @@
 #include "LeafObject.h"
 #include "PMDefine.h"
 
-WindObject::WindObject()
+WindObject::WindObject(GameObject* a_ui)
 :
-WindowInterface(this)
+WindowInterface(this, a_ui)
 ,m_range(MAX_VELOCITY)
 ,m_force(GRAVITY_ACCELERATION * 2)
 {
@@ -45,10 +45,12 @@ void WindObject::Resize( float &a_width, float &a_height )
 
 void WindObject::ChangeRange( float &a_range )
 {
-    a_range = (a_range < MAX_VELOCITY) ? MAX_VELOCITY : a_range;
+    float tmpRange = m_range + a_range;
 
-    m_force = m_force * m_range / a_range;
-    m_range = a_range;
+    tmpRange = (tmpRange < MAX_VELOCITY) ? MAX_VELOCITY : tmpRange;
+
+    m_force = m_force * m_range / tmpRange;
+    m_range = tmpRange;
 
     m_object->SetScale(PMVector(0, m_range, 0));
 }

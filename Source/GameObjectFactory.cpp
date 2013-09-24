@@ -15,6 +15,8 @@ using namespace irr::scene;
 using namespace irr::core;
 using namespace irr::video;
 
+
+
 GameObjectFactory::GameObjectFactory()
 :
 m_avatar(0)
@@ -58,6 +60,15 @@ GameObjectFactory::~GameObjectFactory()
         delete hand;
     }
     m_hands.clear();
+
+    for (std::list<GameObject*>::iterator iter = m_display.begin();
+        iter != m_display.end();
+        ++iter)
+    {
+        GameObject* object = *iter;
+        delete object;
+    }
+    m_display.clear();
 }
 
 void GameObjectFactory::FactoryInit( ISceneManager* a_mgr, irr::video::IVideoDriver* a_driver)
@@ -126,12 +137,6 @@ LeafObject* GameObjectFactory::CreateLeaf()
 
     ISceneNode* leafNode = m_mgr->addSphereSceneNode(3);
 
-//     IAnimatedMesh* mesh = m_mgr->getMesh("Resource/P.3DS");
-//     IAnimatedMeshSceneNode* leafNode = m_mgr->addAnimatedMeshSceneNode(mesh);
-//     leafNode->setMaterialFlag(EMF_LIGHTING, false);
-//     leafNode->setMaterialTexture( 0, m_driver->getTexture("Resource/water.jpg") );
-//     leafNode->setScale(vector3df(40, 30, 20));
-
     leaf->SetNode(leafNode);
 
     m_leaves.push_back(leaf);
@@ -167,15 +172,23 @@ CollidableObject* GameObjectFactory::CreateWind()
     IAnimatedMeshSceneNode* windNode = m_mgr->addAnimatedMeshSceneNode(mesh);
     windNode->setMaterialFlag(EMF_LIGHTING, false);
     windNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
-    windNode->setMaterialTexture( 0, m_driver->getTexture("Resource/wind.jpg") );
+
+    IAnimatedMesh* uiMesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* uiNode = m_mgr->addAnimatedMeshSceneNode(uiMesh, windNode);
+    uiNode->setMaterialFlag(EMF_LIGHTING, false);
+    uiNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
 
     ISceneNode* node = m_mgr->addCubeSceneNode(1, windNode);
     node->setPosition(vector3df(0, 0.5, 0));
-    SMaterial &m = node->getMaterial(0);
-    m.Wireframe = true;
+    node->setMaterialFlag(EMF_WIREFRAME, true);
 
-    WindObject* wind = new WindObject();
+    GameObject* ui = new GameObject();
+    ui->SetNode(uiNode);
+    ui->SetVisible(false);
+
+    WindObject* wind = new WindObject(ui);
     wind->SetNode(windNode);
+    wind->ChangeTexture(TEXTURE_WIND);
 
     float width = MAX_VELOCITY, height = MAX_VELOCITY, range = MAX_VELOCITY;
     wind->Resize(width, height);
@@ -217,7 +230,7 @@ HandObject* GameObjectFactory::GetorCreateHand( UInt32 a_id )
 
     for (int i = 0; i < MAX_FINGERS; ++i)
     {
-        ISceneNode* finger = m_mgr->addSphereSceneNode(5, 5, m_avatar->m_node);
+        ISceneNode* finger = m_mgr->addSphereSceneNode(3, 5, m_avatar->m_node);
         finger->setMaterialFlag(EMF_WIREFRAME, true);
         hand->m_fingles[i].SetNode(finger);
     }
@@ -240,4 +253,21 @@ void GameObjectFactory::HideAllHand()
 std::map<UInt32, WindowInterface*>& GameObjectFactory::GetWindows()
 {
     return m_windows;
+}
+
+GameObject* GameObjectFactory::CreatePlaneShadow()
+{
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* node = m_mgr->addAnimatedMeshSceneNode(mesh);
+    node->setMaterialFlag(EMF_LIGHTING, false);
+    node->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+    node->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
+    node->setMaterialTexture( 0, m_driver->getTexture("Resource/shadow.png"));
+
+    GameObject* shadow = new GameObject();
+    shadow->SetNode(node);
+
+    m_display.push_back(shadow);
+
+    return shadow;
 }

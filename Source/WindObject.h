@@ -11,7 +11,7 @@ public:
 
 private:
     friend class GameObjectFactory;
-    WindObject();
+    WindObject(GameObject* a_ui);
     virtual ~WindObject();
 
     float m_force;

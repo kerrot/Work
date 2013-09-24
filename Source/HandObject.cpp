@@ -105,6 +105,11 @@ PMVector HandObject::GetFingerAbsolutePosition( int a_index )
     return PMVector();
 }
 
+UInt32 HandObject::GetId()
+{
+    return m_id;
+}
+
 // void HandObject::SetNormalDirection( PMVector a_normal, PMVector a_direction )
 // {
 //     PMVector tmp = a_normal.CrossProduct(a_direction);

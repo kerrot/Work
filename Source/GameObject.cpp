@@ -5,9 +5,14 @@
 
 
 using namespace irr;
-using namespace scene;
-using namespace core;
-using namespace video;
+using namespace irr::scene;
+using namespace irr::core;
+using namespace irr::video;
+
+namespace
+{
+    ITexture* m_textures[MAX_TEXTURE];
+}
 
 GameObject::GameObject()
 :
@@ -145,7 +150,7 @@ PMVector GameObject::GetAbsoluteRotation()
     if (m_node)
     {
         const core::matrix4& matrix = m_node->getAbsoluteTransformation();
-        
+
         rotation = matrix.getRotationDegrees();
     }
 
@@ -159,4 +164,29 @@ void GameObject::SetColor( char a_r, char a_g, char a_b, char a_a )
         SMaterial &m = m_node->getMaterial(0);
         m.EmissiveColor = SColor(a_a, a_r, a_g, a_b);
     }
+}
+
+void GameObject::SetTexture(GameObjectTexture a_index, irr::video::ITexture* a_texture)
+{
+    m_textures[a_index] = a_texture;
+}
+
+void GameObject::ChangeTexture( GameObjectTexture a_index )
+{
+    if (m_node)
+    {
+        m_node->setMaterialTexture(0, m_textures[a_index]);
+    }
+}
+
+PMVector GameObject::GetScale()
+{
+    vector3df scale(1, 1, 1);
+
+    if (m_node)
+    {
+        scale = m_node->getScale();
+    }
+
+    return PMVector(scale.X, scale.Y, scale.Z);
 }

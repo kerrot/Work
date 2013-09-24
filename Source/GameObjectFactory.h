@@ -2,6 +2,7 @@
 
 #include "PMCommon.h"
 
+
 namespace irr
 {
     namespace scene
@@ -15,6 +16,7 @@ namespace irr
     }
 }
 
+class GameObject;
 class AvatarObject;
 class LeafObject;
 class HandObject;
@@ -32,6 +34,7 @@ public:
     LeafObject* CreateLeaf();
     CollidableObject* CreateWind();
 
+    GameObject* CreatePlaneShadow();
     HandObject* GetorCreateHand(UInt32 a_id);
     WindowInterface* GetWindowByID(UInt32 a_id);
     AvatarObject* GetAvatar();
@@ -57,6 +60,7 @@ private:
 
     std::map<UInt32, WindowInterface*> m_windows;
     std::map<UInt32, HandObject*> m_hands;
+    std::list<GameObject*> m_display;
 
     irr::scene::ISceneManager* m_mgr;
     irr::video::IVideoDriver* m_driver;

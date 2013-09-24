@@ -86,11 +86,11 @@ void AvatarObject::SetRotation( PMVector a_rotation )
 {
     GameObject::SetRotation(a_rotation);
 
-    m_fornt.x = sin(a_rotation.y / 180 * M_PI);
-    m_fornt.z = cos(a_rotation.y / 180 * M_PI);
+    m_fornt.x = sin(a_rotation.y / 180.0f * M_PI);
+    m_fornt.z = cos(a_rotation.y / 180.0f * M_PI);
 
-    m_right.x = cos(a_rotation.y / 180 * M_PI);
-    m_right.z = -sin(a_rotation.y / 180 * M_PI);
+    m_right.x = cos(a_rotation.y / 180.0f * M_PI);
+    m_right.z = -sin(a_rotation.y / 180.0f * M_PI);
 
    UpdateHeadLookAt();
 }
