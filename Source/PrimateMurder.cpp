@@ -130,6 +130,7 @@ void PrimateMurder::Init()
     m_world = new GameWorld();
     m_physics = new GamePhysics();
     m_leap = new LeapDevice();
+    m_leap->Init();
 
     SIrrlichtCreationParameters params;
     params.DriverType = EDT_OPENGL;
@@ -195,7 +196,7 @@ void PrimateMurder::SetupWorld()
 
     m_driver->setTextureCreationFlag(video::ETCF_CREATE_MIP_MAPS, true);
 
-    IAnimatedMesh* mesh = m_smgr->getMesh("Resource/maple.3ds");
+    IAnimatedMesh* mesh = m_smgr->getMesh("Resource/maple.obj");
     IAnimatedMeshSceneNode* tree = m_smgr->addAnimatedMeshSceneNode(mesh);
     tree->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
 

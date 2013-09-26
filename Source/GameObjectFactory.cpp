@@ -135,7 +135,9 @@ LeafObject* GameObjectFactory::CreateLeaf()
 {
     LeafObject* leaf = new LeafObject();
 
-    ISceneNode* leafNode = m_mgr->addSphereSceneNode(3);
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/leaf.obj");
+    IAnimatedMeshSceneNode* leafNode = m_mgr->addAnimatedMeshSceneNode(mesh);
+    leafNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
 
     leaf->SetNode(leafNode);
 
@@ -156,8 +158,9 @@ void GameObjectFactory::CreateResistance()
 
 CollidableObject* GameObjectFactory::CreateBasket()
 {
-    ISceneNode* node = m_mgr->addCubeSceneNode(30);
-    
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/basket.obj");
+    IAnimatedMeshSceneNode* node = m_mgr->addAnimatedMeshSceneNode(mesh);
+
     BasketObject* basket = new BasketObject();
     basket->SetNode(node);
 

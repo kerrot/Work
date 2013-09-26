@@ -13,12 +13,14 @@ public:
     LeapDevice();
     ~LeapDevice();
 
+    void Init();
     void LeapUpdate();
     void TrackHeadPosition();
 
 private:
     void UpdateHead(const Leap::Frame &a_frame);
     void UpdateHands(const Leap::Frame &a_frame);
+    void UpdateGesture(const Leap::Frame &a_frame);
 
     Leap::Controller* m_controller;
 

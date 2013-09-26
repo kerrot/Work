@@ -32,6 +32,8 @@ void LeapDevice::LeapUpdate()
         //UpdateHead(frame);
 
         UpdateHands(frame);
+
+        UpdateGesture(frame);
     }
 }
 
@@ -159,6 +161,31 @@ void LeapDevice::UpdateHands( const Leap::Frame &a_frame )
         {
             WindowInterface* window = iter->second;
             window->UpdateFingers(fingerData);
+        }
+    }
+}
+
+void LeapDevice::Init()
+{
+    m_controller->enableGesture(Gesture::TYPE_SWIPE);
+}
+
+void LeapDevice::UpdateGesture( const Leap::Frame &a_frame )
+{
+    const GestureList gestures = a_frame.gestures();
+    for (int g = 0; g < gestures.count(); ++g) 
+    {
+        Gesture gesture = gestures[g];
+        if (gesture.type() == Gesture::TYPE_SWIPE)
+        {
+            SwipeGesture swipe = gesture;
+            
+            UInt32 id = swipe.id();
+            Vector d = swipe.direction();
+            Vector s = swipe.startPosition();
+            float v = swipe.speed();
+
+            id = id;
         }
     }
 }

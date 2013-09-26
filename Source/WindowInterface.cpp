@@ -300,7 +300,9 @@ void WindowInterface::UpdateHands( std::map<UInt32, HandObject*>& a_data )
             HandObject* hand = iter->second;
 
             PMVector distance = TransformByCoordinateSqure(hand->GetAbsolutePosition());
-            if (distance.z < ATTACH_DISTANCE_SQUARE)
+            if (distance.z < ATTACH_DISTANCE_SQUARE &&
+                distance.x < m_width * m_width / 4 &&
+                distance.y < m_height * m_height / 4)
             {
                 m_attachedHand = hand;
                 hand->AttachWindow(this);
