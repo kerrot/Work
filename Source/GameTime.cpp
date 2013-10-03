@@ -20,7 +20,7 @@ GameTime& GameTime::GetInstance()
     return m_instance;
 }
 
-unsigned int GameTime::GetCurrentTimeInMS()
+PMTypeDefine::UInt32 GameTime::GetCurrentTimeInMS()
 {
     if (m_timer)
     {

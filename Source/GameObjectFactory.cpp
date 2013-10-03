@@ -8,6 +8,8 @@
 #include "ResistanceObject.h"
 #include "HandObject.h"
 #include "AvatarObject.h"
+#include "MenuUIObject.h"
+#include "ButtonObject.h"
 #include "PMDefine.h"
 
 using namespace irr;
@@ -15,11 +17,10 @@ using namespace irr::scene;
 using namespace irr::core;
 using namespace irr::video;
 
-
-
 GameObjectFactory::GameObjectFactory()
 :
 m_avatar(0)
+,m_menuUI(0)
 {
 
 }
@@ -30,6 +31,12 @@ GameObjectFactory::~GameObjectFactory()
     {
         delete m_avatar;
         m_avatar = 0;
+    }
+
+    if (m_menuUI)
+    {
+        delete m_menuUI;
+        m_menuUI = 0;
     }
 
     for (std::vector<LeafObject*>::iterator iter = m_leaves.begin();
@@ -51,6 +58,7 @@ GameObjectFactory::~GameObjectFactory()
     m_collidables.clear();
 
     m_windows.clear();
+    m_mainWindows.clear();
 
     for (std::map<UInt32, HandObject*>::iterator iter = m_hands.begin();
         iter != m_hands.end();
@@ -184,12 +192,17 @@ CollidableObject* GameObjectFactory::CreateWind()
     ISceneNode* node = m_mgr->addCubeSceneNode(1, windNode);
     node->setPosition(vector3df(0, 0.5, 0));
     node->setMaterialFlag(EMF_WIREFRAME, true);
+    
+    GameObject* rangeUI = new GameObject();
+    rangeUI->SetNode(node);
+    m_display.push_back(rangeUI);
 
     GameObject* ui = new GameObject();
     ui->SetNode(uiNode);
     ui->SetVisible(false);
+    m_display.push_back(ui);
 
-    WindObject* wind = new WindObject(ui);
+    WindObject* wind = new WindObject(ui, rangeUI);
     wind->SetNode(windNode);
     wind->ChangeTexture(TEXTURE_WIND);
 
@@ -199,6 +212,7 @@ CollidableObject* GameObjectFactory::CreateWind()
 
     m_collidables.push_back(wind);
     m_windows[wind->GetId()] = wind;
+    m_mainWindows[wind->GetId()] = wind;
 
     return wind;
 }
@@ -233,8 +247,9 @@ HandObject* GameObjectFactory::GetorCreateHand( UInt32 a_id )
 
     for (int i = 0; i < MAX_FINGERS; ++i)
     {
-        ISceneNode* finger = m_mgr->addSphereSceneNode(3, 5, m_avatar->m_node);
-        finger->setMaterialFlag(EMF_WIREFRAME, true);
+        ISceneNode* finger = m_mgr->addSphereSceneNode(1, 3, m_avatar->m_node);
+        ISceneNode* fingerFrame = m_mgr->addSphereSceneNode(5, 5, finger);
+        fingerFrame->setMaterialFlag(EMF_WIREFRAME, true);
         hand->m_fingles[i].SetNode(finger);
     }
 
@@ -273,4 +288,58 @@ GameObject* GameObjectFactory::CreatePlaneShadow()
     m_display.push_back(shadow);
 
     return shadow;
+}
+
+std::map<UInt32, MainWindowInterface*>& GameObjectFactory::GetMainWindows()
+{
+    return m_mainWindows;
+}
+
+MenuUIObject* GameObjectFactory::GetMenuUI()
+{
+    if (m_menuUI)
+    {
+        return m_menuUI;
+    }
+    
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* menuNode = m_mgr->addAnimatedMeshSceneNode(mesh);
+    menuNode->setMaterialFlag(EMF_LIGHTING, false);
+    menuNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+
+    IAnimatedMesh* uiMesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* uiNode = m_mgr->addAnimatedMeshSceneNode(uiMesh, menuNode);
+    uiNode->setMaterialFlag(EMF_LIGHTING, false);
+    uiNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
+
+    GameObject* ui = new GameObject();
+    ui->SetNode(uiNode);
+    ui->SetVisible(false);
+    m_display.push_back(ui);
+
+    m_menuUI = new MenuUIObject(ui);
+    m_menuUI->SetNode(menuNode);
+    m_menuUI->ChangeTexture(TEXTURE_RESIZE);
+
+    float width = MAX_VELOCITY, height = MAX_VELOCITY;
+    m_menuUI->Resize(width, height);
+    m_menuUI->SetPosition(m_avatar->m_target.GetPosition());
+    m_menuUI->SetRotation(-90, 0, 0);
+
+    IAnimatedMesh* closeButtonMesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* closeButton = m_mgr->addAnimatedMeshSceneNode(closeButtonMesh, menuNode);
+    closeButton->setMaterialFlag(EMF_LIGHTING, false);
+    closeButton->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
+    m_menuUI->m_closeButton = new ButtonObject();
+    m_menuUI->m_closeButton->SetNode(closeButton);
+    m_menuUI->m_closeButton->ChangeTexture(TEXTURE_CLOSE_NORMAL);
+    m_display.push_back(m_menuUI->m_closeButton);
+    m_windows[m_menuUI->m_closeButton->GetId()] = m_menuUI->m_closeButton;
+
+    m_menuUI->Init();
+
+    m_windows[m_menuUI->GetId()] = m_menuUI;
+    m_mainWindows[m_menuUI->GetId()] = m_menuUI;
+
+    return m_menuUI;
 }

@@ -21,8 +21,14 @@ enum GameObjectTexture
     TEXTURE_NONE,
     TEXTURE_WIND,
     TEXTURE_PLANE_SHADOW,
+    TEXTURE_PLANE_CURSOR,
     TEXTURE_MOVE,
     TEXTURE_RESIZE,
+    TEXTURE_SCALE,
+    TEXTURE_CLOSE_NORMAL,
+    TEXTURE_CLOSE_HOVER,
+    TEXTURE_CLOSE_PRESS,
+    TEXTURE_CLOSE_DISABLE,
     MAX_TEXTURE,
 };
 
@@ -42,6 +48,7 @@ public:
     PMVector GetRotation();
     PMVector GetAbsoluteRotation();
     PMVector GetScale();
+    PMVector GetAbsoluteScale();
 
     void SetColor(char a_r, char a_g, char a_b, char a_a);
 

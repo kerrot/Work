@@ -1,8 +1,8 @@
 #pragma once
 #include "CollidableObject.h"
-#include "WindowInterface.h"
+#include "MainWindowInterface.h"
 
-class WindObject : public CollidableObject, public WindowInterface
+class WindObject : public CollidableObject, public MainWindowInterface
 {
 public:
     virtual void HitObject(LeafObject* a_object);
@@ -11,9 +11,10 @@ public:
 
 private:
     friend class GameObjectFactory;
-    WindObject(GameObject* a_ui);
+    WindObject(GameObject* a_ui, GameObject* a_rangeUI);
     virtual ~WindObject();
 
     float m_force;
-    float m_range;
+
+    GameObject* m_rangeUI;
 };

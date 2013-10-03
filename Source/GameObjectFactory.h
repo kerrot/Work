@@ -23,6 +23,8 @@ class HandObject;
 class CollidableObject;
 
 class WindowInterface;
+class MainWindowInterface;
+class MenuUIObject;
 
 class GameObjectFactory
 {
@@ -38,9 +40,11 @@ public:
     HandObject* GetorCreateHand(UInt32 a_id);
     WindowInterface* GetWindowByID(UInt32 a_id);
     AvatarObject* GetAvatar();
+    MenuUIObject* GetMenuUI();
     std::vector<LeafObject*>& GetLeaves();
     std::vector<CollidableObject*>& GetCollidables();
     std::map<UInt32, WindowInterface*>& GetWindows();
+    std::map<UInt32, MainWindowInterface*>& GetMainWindows();
 
     void HideAllHand();
 
@@ -59,6 +63,7 @@ private:
     std::vector<CollidableObject*> m_collidables;
 
     std::map<UInt32, WindowInterface*> m_windows;
+    std::map<UInt32, MainWindowInterface*> m_mainWindows;
     std::map<UInt32, HandObject*> m_hands;
     std::list<GameObject*> m_display;
 
@@ -66,6 +71,8 @@ private:
     irr::video::IVideoDriver* m_driver;
 
     AvatarObject* m_avatar;
+
+    MenuUIObject* m_menuUI;
 };
 
 #define sGameObjectFactory GameObjectFactory::GetInstance()

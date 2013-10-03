@@ -50,6 +50,11 @@ WindowInterface* HandObject::GetAttachedWindow()
 
 void HandObject::AttachWindow( WindowInterface* a_window )
 {
+    if (a_window && m_window)
+    {
+        return;
+    }
+
     m_window = a_window;
 
     SetPosition(GetPosition());

@@ -3,7 +3,7 @@
 #include "GameObjectFactory.h"
 #include "HandObject.h"
 #include "AvatarObject.h"
-#include "WindowInterface.h"
+#include "MainWindowInterFace.h"
 #include "PMType.h"
 #include <stdio.h>
 
@@ -145,16 +145,16 @@ void LeapDevice::UpdateHands( const Leap::Frame &a_frame )
             }
         }
 
-        std::map<UInt32, WindowInterface*>& windows = sGameObjectFactory.GetWindows();
-        for (std::map<UInt32, WindowInterface*>::iterator iter = windows.begin();
-            iter != windows.end();
+        std::map<UInt32, MainWindowInterface*>& mainWindows = sGameObjectFactory.GetMainWindows();
+        for (std::map<UInt32, MainWindowInterface*>::iterator iter = mainWindows.begin();
+            iter != mainWindows.end();
             ++iter)
         {
-            WindowInterface* window = iter->second;
+            MainWindowInterface* window = iter->second;
             window->UpdateHands(handData);
         }
 
-
+        std::map<UInt32, WindowInterface*>& windows = sGameObjectFactory.GetWindows();
         for (std::map<UInt32, WindowInterface*>::iterator iter = windows.begin();
             iter != windows.end();
             ++iter)
@@ -186,6 +186,15 @@ void LeapDevice::UpdateGesture( const Leap::Frame &a_frame )
             float v = swipe.speed();
 
             id = id;
+
+            if (swipe.direction().angleTo(Vector(0, -1, 0)) < 10.0f / 180.0f * PI)
+            {
+                if (swipe.startPosition().x > 0)
+                {
+                    sGameObjectFactory.GetMenuUI();
+                    return;
+                }
+            }
         }
     }
 }

@@ -190,3 +190,16 @@ PMVector GameObject::GetScale()
 
     return PMVector(scale.X, scale.Y, scale.Z);
 }
+
+PMVector GameObject::GetAbsoluteScale()
+{
+    vector3df scale(1, 1, 1);
+
+    if (m_node)
+    {
+        const core::matrix4& matrix = m_node->getAbsoluteTransformation();
+        scale = matrix.getScale();
+    }
+
+    return PMVector(scale.X, scale.Y, scale.Z);
+}

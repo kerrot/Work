@@ -15,6 +15,7 @@ using namespace PMTypeDefine;
 #include <vector>
 #include <map>
 #include <list>
+#include <set>
 
 #endif // !__PM__COMMON__
 

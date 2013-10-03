@@ -1,5 +1,7 @@
 #pragma once
 
+#include "PMCommon.h"
+
 namespace irr
 {
     class ITimer;
@@ -14,7 +16,7 @@ public:
 
     void Init(irr::ITimer* a_timer);
 
-    unsigned int GetCurrentTimeInMS();
+    PMTypeDefine::UInt32 GetCurrentTimeInMS();
 
     ~GameTime();
 private:

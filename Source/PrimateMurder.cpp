@@ -215,7 +215,13 @@ void PrimateMurder::InitTexture()
 {
     GameObject::SetTexture(TEXTURE_NONE, 0);
     GameObject::SetTexture(TEXTURE_WIND, m_driver->getTexture("Resource/wind.jpg"));
-    GameObject::SetTexture(TEXTURE_PLANE_SHADOW, m_driver->getTexture("Resource/s.png"));
+    GameObject::SetTexture(TEXTURE_PLANE_SHADOW, m_driver->getTexture("Resource/shadow.png"));
+    GameObject::SetTexture(TEXTURE_PLANE_CURSOR, m_driver->getTexture("Resource/cursor.png"));
     GameObject::SetTexture(TEXTURE_MOVE, m_driver->getTexture("Resource/Move.png"));
     GameObject::SetTexture(TEXTURE_RESIZE, m_driver->getTexture("Resource/Resize.png"));
+    GameObject::SetTexture(TEXTURE_SCALE, m_driver->getTexture("Resource/Scale.png"));
+    GameObject::SetTexture(TEXTURE_CLOSE_NORMAL, m_driver->getTexture("Resource/CloseNormal.png"));
+    GameObject::SetTexture(TEXTURE_CLOSE_HOVER, m_driver->getTexture("Resource/CloseHover.png"));
+    GameObject::SetTexture(TEXTURE_CLOSE_PRESS, m_driver->getTexture("Resource/ClosePress.png"));
+    GameObject::SetTexture(TEXTURE_CLOSE_DISABLE, m_driver->getTexture("Resource/CloseDisable.png"));
 }
