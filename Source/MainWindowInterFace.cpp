@@ -3,6 +3,8 @@
 #include "HandObject.h"
 #include <assert.h>
 #include "GameTime.h"
+#include "GameObjectFactory.h"
+#include "AvatarObject.h"
 
 MainWindowInterface::MainWindowInterface( GameObject* a_object, GameObject* a_ui )
 :
@@ -39,6 +41,11 @@ void MainWindowInterface::ChangeRange( float &a_range )
 
 void MainWindowInterface::UpdateHands( std::map<UInt32, HandObject*>& a_data )
 {
+    if (!m_enabled)
+    {
+        return;
+    }
+
     UInt32 current = sGameTime.GetCurrentTimeInMS();
 
     if (m_attachedHand)
@@ -121,6 +128,15 @@ void MainWindowInterface::InterAction( CursorData &a_data )
     }
 
     UpdateState();
+
+    bool enabled = m_state == WINDOW_STATE_NORMAL;
+    for (std::vector<WindowInterface*>::iterator iter = m_subWindows.begin();
+        iter != m_subWindows.end();
+        ++iter)
+    {
+        WindowInterface* window = *iter;
+        window->SetEnabled(enabled);
+    }
 }
 
 void MainWindowInterface::ChangeState( WindowState a_state )
@@ -154,10 +170,15 @@ void MainWindowInterface::UpdateState()
 {
     if (m_state != WINDOW_STATE_NORMAL)
     {
+        AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+        PMVector direction = avatar->GetHeadAbsolutePosition() - m_object->GetAbsolutePosition();
+
+        float a = (direction.Dot(m_normal) > 0) ? 1.0f : -1.0f;
+
         float shift = ATTACH_DISTANCE * (FINGER_CLICK_TIME - sGameTime.GetCurrentTimeInMS() + m_releaseTime) / FINGER_CLICK_TIME;
 
         PMVector scale = m_object->GetScale();
-        m_ui->SetPosition(PMVector(0, shift / scale.y, 0));
+        m_ui->SetPosition(PMVector(0, a * shift / scale.y, 0));
     }
 }
 
@@ -339,6 +360,19 @@ void MainWindowInterface::SetNormalDirection( PMVector a_normal, PMVector a_plan
     {
         WindowInterface* window = *iter;
         window->SetNormalDirection(a_normal, a_planeVectorX, a_planeVectorY);
+    }
+}
+
+void MainWindowInterface::SetEnabled( bool a_result )
+{
+    WindowInterface::SetEnabled(a_result);
+
+    for (std::vector<WindowInterface*>::iterator iter = m_subWindows.begin();
+        iter != m_subWindows.end();
+        ++iter)
+    {
+        WindowInterface* window = *iter;
+        window->SetEnabled(a_result);
     }
 }
 

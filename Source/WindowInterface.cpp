@@ -1,6 +1,7 @@
 #include "WindowInterface.h"
 #include "GameObject.h"
 #include "HandObject.h"
+#include "AvatarObject.h"
 #include "GameObjectFactory.h"
 #include "PMDefine.h"
 #include "GameTime.h"
@@ -17,6 +18,7 @@ m_object(a_object)
 ,m_id(++m_idNow)
 ,m_width(MAX_VELOCITY)
 ,m_height(MAX_VELOCITY)
+,m_enabled(true)
 {    
     assert(m_object);
 }
@@ -99,7 +101,10 @@ void WindowInterface::UpdateFingers( std::map<UInt32, PMVector>& a_data )
     }
 
     UpdateShadow(data);
-    InterAction(data);
+    if (m_enabled)
+    {
+        InterAction(data);
+    }
 
     m_lastData.cursorID = data.cursorID;
     m_lastData.fingerData.clear();
@@ -134,14 +139,21 @@ void WindowInterface::UpdateShadow(CursorData& a_data)
             else
             {
                 shadow = sGameObjectFactory.CreatePlaneShadow();
+                shadow->SetParent(m_object);
                 m_shadows.push_back(shadow);
             }
 
             shadow->SetVisible(true);
             
-            shadow->SetRotation(m_object->GetAbsoluteRotation());
-            shadow->SetScale((tmp.distance.z < ATTACH_DISTANCE_SQUARE) ? PMVector(7, 0, 7): PMVector(10, 0, 10));
+            PMVector scale = m_object->GetAbsoluteScale();
+            float shadowScale = (scale.x > scale.z) ? scale.x : scale.z; 
+            shadow->SetScale((tmp.distance.z < ATTACH_DISTANCE_SQUARE) ? PMVector(5 / shadowScale, 0, 5 / shadowScale): PMVector(10 / shadowScale, 0, 10 / shadowScale));
 
+            AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+            PMVector view = avatar->GetHeadAbsolutePosition() - m_object->GetAbsolutePosition();
+
+            float shadowY = (view.Dot(m_normal) > 0) ? 1.0f / scale.y : -1.0f / scale.y;
+            
             if (iter->first == a_data.cursorID)
             {
                 a_data.coordinate.x = x;
@@ -154,9 +166,7 @@ void WindowInterface::UpdateShadow(CursorData& a_data)
                 shadow->ChangeTexture(TEXTURE_PLANE_SHADOW);
             }
 
-            PMVector position = m_object->GetAbsolutePosition() + m_planeVectorX * x + m_planeVectorY * y + m_normal;
-
-            shadow->SetPosition(position);
+            shadow->SetPosition(PMVector(x / scale.x, shadowY, y / scale.z));
 
             ++num;
         }
@@ -187,4 +197,9 @@ void WindowInterface::Resize( float &a_width, float &a_height )
 
     m_width = scale.x;
     m_height = scale.y;
+}
+
+void WindowInterface::SetEnabled( bool a_result )
+{
+    m_enabled = a_result;
 }

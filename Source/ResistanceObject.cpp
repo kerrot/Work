@@ -16,6 +16,11 @@ ResistanceObject::~ResistanceObject()
 
 void ResistanceObject::HitObject(LeafObject* a_object )
 {
+    if (!a_object->IsVisible())
+    {
+        return;
+    }
+
     const PMVector& velocity = a_object->GetVelocity();
 
     float ax = (velocity.x > 0) ? -1.0f : 1.0f;

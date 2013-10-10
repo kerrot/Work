@@ -35,7 +35,6 @@ m_lastMouseX(CENTER_X)
 
 PrimateMurder::~PrimateMurder()
 {
-    delete m_world;
     delete m_physics;
     delete m_leap;
     m_smgr->drop();
@@ -47,6 +46,8 @@ bool PrimateMurder::OnEvent(const SEvent& event)
 
     if (event.EventType == irr::EET_KEY_INPUT_EVENT && event.KeyInput.PressedDown)
     {
+        AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+
         switch (event.KeyInput.Key) 
         {
         case irr::KEY_ESCAPE:    
@@ -55,54 +56,49 @@ bool PrimateMurder::OnEvent(const SEvent& event)
             break;
         case KEY_KEY_W:
             {
-                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
                 avatar->Forward();
             }
             break;
         case KEY_KEY_S:
             {
-                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
                 avatar->Backward();
             }
             break;
         case KEY_KEY_A:
             {
-                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
                 avatar->Leftward();
             }
             break;
         case KEY_KEY_D:
             {
-                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
                 avatar->Rightward();
             }
             break;
         case KEY_KEY_X:
             {
-                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
                 avatar->Downward();
             }
             break;
         case KEY_SPACE:
             {
-                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
                 avatar->Upward();
             }
             break;
         case KEY_KEY_Q:
             {
-                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
                 avatar->TurnLeft();
             }
             break;
         case KEY_KEY_E:
             {
-                AvatarObject* avatar = sGameObjectFactory.GetAvatar();
                 avatar->TurnRight();
             }
             break;
         case KEY_KEY_T:
             m_leap->TrackHeadPosition();
+            break;
+        case KEY_KEY_H:
+            m_leap->AdjustByHand();
             break;
         }
     }
@@ -127,7 +123,6 @@ bool PrimateMurder::OnEvent(const SEvent& event)
 
 void PrimateMurder::Init()
 {
-    m_world = new GameWorld();
     m_physics = new GamePhysics();
     m_leap = new LeapDevice();
     m_leap->Init();
@@ -152,33 +147,61 @@ void PrimateMurder::Init()
     m_env = m_device->getGUIEnvironment();
     InitTexture();
 
-    m_world->WorldInit();
     sGameObjectFactory.FactoryInit(m_smgr, m_driver);
     sGameTime.Init(m_device->getTimer());
+    sGameWorld.WorldInit();
 
     SetupWorld();
 }
 
 void PrimateMurder::Run()
 {
+    int lastFPS = -1;
+    int needUpdatePhysics = 1000 / 60;
+
     while (m_device->run())
     {
-        m_device->getTimer();
+        PMTypeDefine::UInt32 lastUpdateTime = 0;
 
-        m_device->getCursorControl()->setPosition(CENTER_X, CENTER_Y);
-        m_lastMouseX = CENTER_X;
-        m_lastMouseY = CENTER_Y;
+        if (m_device->isWindowActive())
+        {
+            PMTypeDefine::UInt32 current = m_device->getTimer()->getTime();
 
-        m_leap->LeapUpdate();
-        m_world->WorldUpdate();
-        m_physics->PhysicsUpdate();
+            m_device->getCursorControl()->setPosition(CENTER_X, CENTER_Y);
+            m_lastMouseX = CENTER_X;
+            m_lastMouseY = CENTER_Y;
 
-        m_driver->beginScene(true, true, SColor(255, 100, 100, 100));
+            m_leap->LeapUpdate();
+            sGameWorld.WorldUpdate();
 
-        m_smgr->drawAll();
-        m_env->drawAll();
+            if (current - lastUpdateTime > needUpdatePhysics)
+            {
+                m_physics->PhysicsUpdate();
+                lastUpdateTime = current;
+            }
 
-        m_driver->endScene();
+            m_driver->beginScene(true, true, SColor(255, 100, 100, 100));
+
+            m_smgr->drawAll();
+            m_env->drawAll();
+
+            m_driver->endScene();
+
+            int fps = m_driver->getFPS();
+
+            if (lastFPS != fps)
+            {
+                core::stringw str = L"FPS: ";
+                str += fps;
+
+                m_device->setWindowCaption(str.c_str());
+                lastFPS = fps;
+            }
+        }
+        else
+        {
+            m_device->yield();
+        }
     }
 }
 
@@ -199,22 +222,24 @@ void PrimateMurder::SetupWorld()
     IAnimatedMesh* mesh = m_smgr->getMesh("Resource/maple.obj");
     IAnimatedMeshSceneNode* tree = m_smgr->addAnimatedMeshSceneNode(mesh);
     tree->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+    tree->setRotation(vector3df(0, 120, 0));
 
-    ISceneNode* ground = m_smgr->addSphereSceneNode(1000, 256);
-    ground->setPosition(core::vector3df(0, -1000, 0));
+    ISceneNode* ground = m_smgr->addSphereSceneNode(10000, 256);
+    ground->setPosition(core::vector3df(0, -10000, 0));
+    ground->setRotation(vector3df(90, 0, 0));
     video::SMaterial &m = ground->getMaterial(0);
     m.EmissiveColor = video::SColor(255, 0, 255, 0);
 
     m_light = m_smgr->addLightSceneNode(0, 
-                                        vector3df(0, 1100, 0), 
-                                        SColorf(0.7f, 1.0f, 1.0f, 0.0f), 
-                                        1000);
+                                        vector3df(-450, 1000, -750), 
+                                        SColorf(0.3f, 1.0f, 1.0f, 1.0f), 
+                                        2500);
 }
 
 void PrimateMurder::InitTexture()
 {
     GameObject::SetTexture(TEXTURE_NONE, 0);
-    GameObject::SetTexture(TEXTURE_WIND, m_driver->getTexture("Resource/wind.jpg"));
+    GameObject::SetTexture(TEXTURE_WIND, m_driver->getTexture("Resource/wind.png"));
     GameObject::SetTexture(TEXTURE_PLANE_SHADOW, m_driver->getTexture("Resource/shadow.png"));
     GameObject::SetTexture(TEXTURE_PLANE_CURSOR, m_driver->getTexture("Resource/cursor.png"));
     GameObject::SetTexture(TEXTURE_MOVE, m_driver->getTexture("Resource/Move.png"));

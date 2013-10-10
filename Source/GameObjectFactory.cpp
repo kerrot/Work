@@ -85,18 +85,8 @@ void GameObjectFactory::FactoryInit( ISceneManager* a_mgr, irr::video::IVideoDri
     m_driver = a_driver;
 
     CreateAvatar();
-
-    LeafObject* leaf = CreateLeaf();
-    leaf->SetOriposition(PMVector(0, 200, -100));
-
     CreateGravity();
     CreateResistance();
-
-    CollidableObject* basket = CreateBasket();
-    basket->SetPosition(30, 0, -100);
-
-    CollidableObject* wind = CreateWind();
-    wind->SetPosition(0, 50, -100);
 }
 
 std::vector<LeafObject*>& GameObjectFactory::GetLeaves()
@@ -133,10 +123,10 @@ void GameObjectFactory::CreateAvatar()
     m_avatar->m_head.SetNode(cam);
     m_avatar->m_target.SetNode(m_mgr->addSphereSceneNode(3, 16, node));
 
-    m_avatar->m_target.SetPosition(0, 100, 50);
+    m_avatar->m_target.SetPosition(0, 80, 1000);
 
-    m_avatar->SetPosition(PMVector(0, 0, -50));
-    m_avatar->SetHeadPosition(PMVector(0, 100, -200));
+    m_avatar->SetPosition(PMVector(-10, 00, 350));
+    m_avatar->SetHeadPosition(PMVector(0, 80, -300));
 }
 
 LeafObject* GameObjectFactory::CreateLeaf()
@@ -148,6 +138,11 @@ LeafObject* GameObjectFactory::CreateLeaf()
     leafNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
 
     leaf->SetNode(leafNode);
+    
+    UInt32 angleX = rand() % 30;
+    UInt32 angleZ = rand() % 30;
+
+    leaf->SetRotation(PMVector(angleX, 0, angleZ));
 
     m_leaves.push_back(leaf);
 
@@ -164,13 +159,26 @@ void GameObjectFactory::CreateResistance()
     m_collidables.push_back(new ResistanceObject());
 }
 
-CollidableObject* GameObjectFactory::CreateBasket()
+BasketObject* GameObjectFactory::CreateBasket()
 {
     IAnimatedMesh* mesh = m_mgr->getMesh("Resource/basket.obj");
     IAnimatedMeshSceneNode* node = m_mgr->addAnimatedMeshSceneNode(mesh);
 
-    BasketObject* basket = new BasketObject();
+    IAnimatedMesh* uiMesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* uiNode = m_mgr->addAnimatedMeshSceneNode(uiMesh, node);
+    uiNode->setMaterialFlag(EMF_LIGHTING, false);
+    uiNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+
+    GameObject* ui = new GameObject();
+    ui->SetNode(uiNode);
+    m_display.push_back(ui);
+
+    BasketObject* basket = new BasketObject(ui);
     basket->SetNode(node);
+
+    ui->SetPosition(0, 50, 0);
+    ui->ChangeTexture(TEXTURE_RESIZE);
+    ui->SetScale(PMVector(100, 0, 60));
 
     m_collidables.push_back(basket);
 
@@ -183,11 +191,13 @@ CollidableObject* GameObjectFactory::CreateWind()
     IAnimatedMeshSceneNode* windNode = m_mgr->addAnimatedMeshSceneNode(mesh);
     windNode->setMaterialFlag(EMF_LIGHTING, false);
     windNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+    windNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
 
     IAnimatedMesh* uiMesh = m_mgr->getMesh("Resource/Plane.3DS");
     IAnimatedMeshSceneNode* uiNode = m_mgr->addAnimatedMeshSceneNode(uiMesh, windNode);
     uiNode->setMaterialFlag(EMF_LIGHTING, false);
     uiNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
+    uiNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
 
     ISceneNode* node = m_mgr->addCubeSceneNode(1, windNode);
     node->setPosition(vector3df(0, 0.5, 0));
@@ -299,6 +309,13 @@ MenuUIObject* GameObjectFactory::GetMenuUI()
 {
     if (m_menuUI)
     {
+        m_menuUI->SetVisible(true);
+        m_menuUI->SetEnabled(true);
+        PMVector avatarPos = m_avatar->GetAbsolutePosition();
+        PMVector headPos = m_avatar->GetHeadPosition();
+        avatarPos.y += headPos.y;
+        m_menuUI->SetPosition(avatarPos);
+        m_menuUI->SetRotation(-90, 0, 0);
         return m_menuUI;
     }
     
@@ -311,6 +328,7 @@ MenuUIObject* GameObjectFactory::GetMenuUI()
     IAnimatedMeshSceneNode* uiNode = m_mgr->addAnimatedMeshSceneNode(uiMesh, menuNode);
     uiNode->setMaterialFlag(EMF_LIGHTING, false);
     uiNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
+    uiNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
 
     GameObject* ui = new GameObject();
     ui->SetNode(uiNode);
@@ -323,18 +341,16 @@ MenuUIObject* GameObjectFactory::GetMenuUI()
 
     float width = MAX_VELOCITY, height = MAX_VELOCITY;
     m_menuUI->Resize(width, height);
-    m_menuUI->SetPosition(m_avatar->m_target.GetPosition());
+    m_menuUI->SetPosition(m_avatar->m_target.GetAbsolutePosition());
     m_menuUI->SetRotation(-90, 0, 0);
 
-    IAnimatedMesh* closeButtonMesh = m_mgr->getMesh("Resource/Plane.3DS");
-    IAnimatedMeshSceneNode* closeButton = m_mgr->addAnimatedMeshSceneNode(closeButtonMesh, menuNode);
-    closeButton->setMaterialFlag(EMF_LIGHTING, false);
-    closeButton->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
-    m_menuUI->m_closeButton = new ButtonObject();
-    m_menuUI->m_closeButton->SetNode(closeButton);
+    m_menuUI->m_closeButton = CreateButton();
+    m_menuUI->m_closeButton->m_node->setParent(menuNode);
     m_menuUI->m_closeButton->ChangeTexture(TEXTURE_CLOSE_NORMAL);
-    m_display.push_back(m_menuUI->m_closeButton);
-    m_windows[m_menuUI->m_closeButton->GetId()] = m_menuUI->m_closeButton;
+
+    m_menuUI->m_startButton = CreateButton();
+    m_menuUI->m_startButton->m_node->setParent(menuNode);
+    m_menuUI->m_startButton->ChangeTexture(TEXTURE_CLOSE_NORMAL);
 
     m_menuUI->Init();
 
@@ -342,4 +358,19 @@ MenuUIObject* GameObjectFactory::GetMenuUI()
     m_mainWindows[m_menuUI->GetId()] = m_menuUI;
 
     return m_menuUI;
+}
+
+ButtonObject* GameObjectFactory::CreateButton()
+{
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* buttonNode = m_mgr->addAnimatedMeshSceneNode(mesh);
+    buttonNode->setMaterialFlag(EMF_LIGHTING, false);
+    buttonNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
+    ButtonObject* btn = new ButtonObject();
+    btn->SetNode(buttonNode);
+    
+    m_display.push_back(btn);
+    m_windows[btn->GetId()] = btn;
+
+    return btn;
 }

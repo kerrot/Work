@@ -21,10 +21,12 @@ class AvatarObject;
 class LeafObject;
 class HandObject;
 class CollidableObject;
+class BasketObject;
 
 class WindowInterface;
 class MainWindowInterface;
 class MenuUIObject;
+class ButtonObject;
 
 class GameObjectFactory
 {
@@ -35,8 +37,9 @@ public:
 
     LeafObject* CreateLeaf();
     CollidableObject* CreateWind();
-
+    BasketObject* CreateBasket();
     GameObject* CreatePlaneShadow();
+
     HandObject* GetorCreateHand(UInt32 a_id);
     WindowInterface* GetWindowByID(UInt32 a_id);
     AvatarObject* GetAvatar();
@@ -56,9 +59,8 @@ private:
     void CreateAvatar();
     void CreateGravity();
     void CreateResistance();
-    CollidableObject* CreateBasket();
+    ButtonObject* CreateButton();
 
-    //std::vector<GameObject*> m_gameObjects;
     std::vector<LeafObject*> m_leaves;
     std::vector<CollidableObject*> m_collidables;
 

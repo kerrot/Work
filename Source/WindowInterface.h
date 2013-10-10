@@ -22,6 +22,7 @@ public:
     virtual void SetNormalDirection(PMVector a_normal, PMVector a_planeVectorX, PMVector a_planeVectorY);
 
     void UpdateFingers(std::map<UInt32, PMVector>& a_data);
+    virtual void SetEnabled(bool a_result);
 protected:
     WindowInterface(GameObject* a_object);
     virtual ~WindowInterface();
@@ -64,6 +65,7 @@ protected:
     virtual void InterAction(CursorData &a_data);
 
     static UInt32 m_idNow;
+    bool m_enabled;
     UInt32 m_id;
 
     float m_width;

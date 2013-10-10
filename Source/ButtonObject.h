@@ -2,12 +2,14 @@
 
 #include "GameObject.h"
 #include "WindowInterface.h"
+#include "Delegate.h"
 
 class ButtonObject : public WindowInterface, public GameObject
 {
 public:
     void SetButtonDisplay(GameObjectTexture a_n, GameObjectTexture a_r, GameObjectTexture a_p, GameObjectTexture a_d);
 
+    Delegate ReleaseEvent;
 protected:
     friend class GameObjectFactory;
     ButtonObject();
@@ -23,6 +25,13 @@ protected:
         MAX_BUTTON_DISPLAY,
     };
 
+    enum ButtonState
+    {
+        BUTTON_STATE_NORMAL,
+        BUTTON_STATE_HOVOR,
+        BUTTON_STATE_PRESS,
+    };
+
     virtual void InterAction(CursorData &a_data);
 
     void OnRollOver();
@@ -30,6 +39,8 @@ protected:
     void OnPress();
     void OnRelease();
     void OnReleaseOutside();
+
+    ButtonState m_state;
 
     GameObjectTexture m_buttonDisplay[MAX_BUTTON_DISPLAY];
 };

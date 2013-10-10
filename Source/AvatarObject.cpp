@@ -10,7 +10,7 @@ using namespace core;
 
 AvatarObject::AvatarObject()
 :
-m_speed(1)
+m_speed(10)
 ,m_fornt(0, 0, 1)
 ,m_right(1, 0, 0)
 ,m_lookRotation(0, 0, 0)
@@ -98,6 +98,16 @@ void AvatarObject::SetRotation( PMVector a_rotation )
 void AvatarObject::SetHeadPosition( PMVector a_position )
 {
     m_head.SetPosition(a_position);
+}
+
+PMVector AvatarObject::GetHeadAbsolutePosition()
+{
+    return m_head.GetAbsolutePosition();
+}
+
+PMVector AvatarObject::GetHeadPosition()
+{
+    return m_head.GetPosition();
 }
 
 void AvatarObject::TurnLeft()

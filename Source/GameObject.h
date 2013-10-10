@@ -43,6 +43,8 @@ public:
     virtual void SetPosition(PMVector a_position);
     void SetRotation(PMVector a_rotation);
 
+    bool IsVisible();
+
     PMVector GetPosition();
     PMVector GetAbsolutePosition();
     PMVector GetRotation();
@@ -53,6 +55,7 @@ public:
     void SetColor(char a_r, char a_g, char a_b, char a_a);
 
     void ChangeTexture(GameObjectTexture a_index);
+    void SetParent(GameObject* a_object);
 
     static void RotationToDirection(PMVector &a_vector, PMVector a_rotation);
     static void SetTexture(GameObjectTexture a_index, irr::video::ITexture* a_texture);

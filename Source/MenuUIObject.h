@@ -16,6 +16,9 @@ private:
     virtual ~MenuUIObject();
 
     void Init();
+    void CloseButton();
+    void Game();
 
     ButtonObject* m_closeButton;
+    ButtonObject* m_startButton;
 };

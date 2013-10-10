@@ -22,6 +22,8 @@ public:
     virtual void SetPosition(PMVector a_position);
     virtual void SetRotation(PMVector a_rotation);
     void SetHeadPosition(PMVector a_position);
+    PMVector GetHeadPosition();
+    PMVector GetHeadAbsolutePosition();
 
 private:
     friend class GameObjectFactory;

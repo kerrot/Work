@@ -1,7 +1,7 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# File Created: 25.09.2013 20:10:06
+# File Created: 07.10.2013 22:11:29
 
-newmtl Leaf
+newmtl _leafLeaf
 	Ns 100.0000
 	Ni 1.5000
 	d 1.0000
@@ -12,5 +12,5 @@ newmtl Leaf
 	Kd 1.0000 1.0000 1.0000
 	Ks 0.0450 0.0450 0.0450
 	Ke 0.0000 0.0000 0.0000
-	map_Ka VC_Leaf_Vertex_Color.bmp
-	map_Kd VC_Leaf_Vertex_Color.bmp
+	map_Ka D:\Dev\Github\Work\Binary\Resource\VC_Leaf_Vertex_Color.bmp
+	map_Kd D:\Dev\Github\Work\Binary\Resource\VC_Leaf_Vertex_Color.bmp

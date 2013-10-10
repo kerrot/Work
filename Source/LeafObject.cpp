@@ -1,4 +1,5 @@
 #include "LeafObject.h"
+#include "PMDefine.h"
 
 LeafObject::LeafObject(PMVector a_position)
 :
@@ -37,6 +38,11 @@ void LeafObject::ResetToBegin()
 
 void LeafObject::UpdatePosition()
 {
+    if (!IsVisible())
+    {
+        return;
+    }
+
     m_velocity += m_acceleration;
     m_acceleration.x = 0;
     m_acceleration.y = 0;
@@ -45,6 +51,12 @@ void LeafObject::UpdatePosition()
     PMVector position = GetPosition() + m_velocity;
 
     SetPosition(position);
+
+    float v = m_velocity.x * m_velocity.x + m_velocity.z + m_velocity.z;
+    float av = v * MAX_ANGULAR_VELOCITY / (MAX_VELOCITY * MAX_VELOCITY) + 0.1;
+    PMVector r = GetRotation();
+    r.y += av;
+    SetRotation(r);
 }
 
 void LeafObject::SetOriposition( PMVector a_position )

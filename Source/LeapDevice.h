@@ -16,6 +16,7 @@ public:
     void Init();
     void LeapUpdate();
     void TrackHeadPosition();
+    void AdjustByHand();
 
 private:
     void UpdateHead(const Leap::Frame &a_frame);

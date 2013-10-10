@@ -3,8 +3,6 @@
 #include "PMCommon.h"
 #include <IEventReceiver.h>
 
-
-
 namespace irr
 {
     class IrrlichtDevice;
@@ -30,7 +28,6 @@ namespace irr
 
 using namespace irr;
 
-class GameWorld;
 class GamePhysics;
 class LeapDevice;
 
@@ -53,7 +50,6 @@ private:
     void OnKeyDown(EKEY_CODE a_key);
     void OnKeyUp(EKEY_CODE a_key);
 
-    GameWorld* m_world;
     GamePhysics* m_physics;
     LeapDevice* m_leap;
 

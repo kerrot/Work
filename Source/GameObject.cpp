@@ -203,3 +203,21 @@ PMVector GameObject::GetAbsoluteScale()
 
     return PMVector(scale.X, scale.Y, scale.Z);
 }
+
+bool GameObject::IsVisible()
+{
+    if (m_node)
+    {
+        return m_node->isVisible();
+    }
+
+    return false;
+}
+
+void GameObject::SetParent( GameObject* a_object )
+{
+    if (a_object && a_object->m_node && m_node)
+    {
+        return m_node->setParent(a_object->m_node);
+    }
+}

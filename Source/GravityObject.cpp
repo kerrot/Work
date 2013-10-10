@@ -16,5 +16,10 @@ GravityObject::~GravityObject()
 
 void GravityObject::HitObject(LeafObject* a_object )
 {
+    if (!a_object->IsVisible())
+    {
+        return;
+    }
+
     a_object->AddAcceleration(m_gravity);
 }

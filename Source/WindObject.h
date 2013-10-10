@@ -14,6 +14,10 @@ private:
     WindObject(GameObject* a_ui, GameObject* a_rangeUI);
     virtual ~WindObject();
 
+    virtual void ChangeState(WindowState a_state);
+    virtual void UpdateState();
+
+    bool m_working;
     float m_force;
 
     GameObject* m_rangeUI;

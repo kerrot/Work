@@ -14,7 +14,7 @@ public:
     void UpdateHands(std::map<UInt32, HandObject*>& a_data);
 
     virtual void SetNormalDirection(PMVector a_normal, PMVector a_planeVectorX, PMVector a_planeVectorY);
-
+    virtual void SetEnabled(bool a_result);
 protected:
     MainWindowInterface(GameObject* a_object, GameObject* a_ui);
     virtual ~MainWindowInterface();
@@ -28,8 +28,8 @@ protected:
     };
 
     virtual void InterAction(CursorData &a_data);
-    void ChangeState(WindowState a_state);
-    void UpdateState();
+    virtual void ChangeState(WindowState a_state);
+    virtual void UpdateState();
     void UpdateNormalState(CursorData &a_data);
     void UpdateResizeState(CursorData &a_data);
     void UpdateScaleState(CursorData &a_data);

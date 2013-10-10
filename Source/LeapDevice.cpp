@@ -198,3 +198,27 @@ void LeapDevice::UpdateGesture( const Leap::Frame &a_frame )
         }
     }
 }
+
+void LeapDevice::AdjustByHand()
+{
+    if (m_controller->isConnected())
+    {
+        const Frame frame = m_controller->frame();
+        if (frame.hands().count() == 1)
+        {
+            const Hand hand = frame.hands()[0];
+            AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+            PMVector headPos = avatar->GetHeadPosition();
+            float diff = headPos.y - hand.palmPosition().y;
+            headPos.y = hand.palmPosition().y;
+            avatar->SetHeadPosition(headPos);
+            PMVector pos = avatar->GetAbsolutePosition();
+            pos.y += diff;
+            avatar->SetPosition(pos);
+        }
+    }
+    else
+    {
+        printf("No LeapDevice\n");
+    }
+}
