@@ -26,7 +26,16 @@ class BasketObject;
 class WindowInterface;
 class MainWindowInterface;
 class MenuUIObject;
+class ComicUIObject;
 class ButtonObject;
+
+struct PMVector;
+
+struct ShadowData
+{
+    float x;
+    float y;
+};
 
 class GameObjectFactory
 {
@@ -44,10 +53,15 @@ public:
     WindowInterface* GetWindowByID(UInt32 a_id);
     AvatarObject* GetAvatar();
     MenuUIObject* GetMenuUI();
+    ComicUIObject* GetComicUI();
     std::vector<LeafObject*>& GetLeaves();
     std::vector<CollidableObject*>& GetCollidables();
     std::map<UInt32, WindowInterface*>& GetWindows();
     std::map<UInt32, MainWindowInterface*>& GetMainWindows();
+
+    
+    std::pair<UInt32, UInt32> LoadTexture(GameObject* a_object, std::string a_name);
+    void DrawShadow(GameObject* a_object, std::vector<ShadowData>& a_shadows, PMVector a_shift);
 
     void HideAllHand();
 
@@ -75,6 +89,8 @@ private:
     AvatarObject* m_avatar;
 
     MenuUIObject* m_menuUI;
+    ComicUIObject* m_comicUI;
+    GameObject* m_shadowDisplay;
 };
 
 #define sGameObjectFactory GameObjectFactory::GetInstance()

@@ -86,6 +86,7 @@ add_executable (
   ${CMAKE_SOURCE_DIR}/Source/ButtonObject.cpp
   ${CMAKE_SOURCE_DIR}/Source/MainWindowInterFace.cpp
   ${CMAKE_SOURCE_DIR}/Source/MenuUIObject.cpp
+  ${CMAKE_SOURCE_DIR}/Source/ComicUIObject.cpp
 )
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")

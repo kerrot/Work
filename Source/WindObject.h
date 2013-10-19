@@ -8,7 +8,7 @@ public:
     virtual void HitObject(LeafObject* a_object);
     virtual void Resize(float &a_width, float &a_height);
     virtual void ChangeRange(float &a_range);
-
+    virtual PMVector GetPlaneScale();
 private:
     friend class GameObjectFactory;
     WindObject(GameObject* a_ui, GameObject* a_rangeUI);

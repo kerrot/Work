@@ -18,7 +18,9 @@ private:
     void Init();
     void CloseButton();
     void Game();
+    void Comic();
 
     ButtonObject* m_closeButton;
     ButtonObject* m_startButton;
+    ButtonObject* m_comicButton;
 };

@@ -97,4 +97,9 @@ void WindObject::UpdateState()
     }
 }
 
+PMVector WindObject::GetPlaneScale()
+{
+    return PMVector(m_width, m_range, m_height);
+}
+
 

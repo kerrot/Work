@@ -9,6 +9,8 @@ class ButtonObject : public WindowInterface, public GameObject
 public:
     void SetButtonDisplay(GameObjectTexture a_n, GameObjectTexture a_r, GameObjectTexture a_p, GameObjectTexture a_d);
 
+    virtual void Resize(float &a_width, float &a_height);
+
     Delegate ReleaseEvent;
 protected:
     friend class GameObjectFactory;

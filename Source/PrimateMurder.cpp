@@ -158,11 +158,10 @@ void PrimateMurder::Run()
 {
     int lastFPS = -1;
     int needUpdatePhysics = 1000 / 60;
+    PMTypeDefine::UInt32 lastUpdateTime = 0;
 
     while (m_device->run())
     {
-        PMTypeDefine::UInt32 lastUpdateTime = 0;
-
         if (m_device->isWindowActive())
         {
             PMTypeDefine::UInt32 current = m_device->getTimer()->getTime();
@@ -249,4 +248,22 @@ void PrimateMurder::InitTexture()
     GameObject::SetTexture(TEXTURE_CLOSE_HOVER, m_driver->getTexture("Resource/CloseHover.png"));
     GameObject::SetTexture(TEXTURE_CLOSE_PRESS, m_driver->getTexture("Resource/ClosePress.png"));
     GameObject::SetTexture(TEXTURE_CLOSE_DISABLE, m_driver->getTexture("Resource/CloseDisable.png"));
+    GameObject::SetTexture(TEXTURE_START_NORMAL, m_driver->getTexture("Resource/StartNormal.png"));
+    GameObject::SetTexture(TEXTURE_START_HOVER, m_driver->getTexture("Resource/StartHover.png"));
+    GameObject::SetTexture(TEXTURE_START_PRESS, m_driver->getTexture("Resource/StartPress.png"));
+    GameObject::SetTexture(TEXTURE_END_NORMAL, m_driver->getTexture("Resource/EndNormal.png"));
+    GameObject::SetTexture(TEXTURE_END_HOVER, m_driver->getTexture("Resource/EndHover.png"));
+    GameObject::SetTexture(TEXTURE_END_PRESS, m_driver->getTexture("Resource/EndPress.png"));
+    GameObject::SetTexture(TEXTURE_COMIC_NORMAL, m_driver->getTexture("Resource/ComicNormal.png"));
+    GameObject::SetTexture(TEXTURE_COMIC_HOVER, m_driver->getTexture("Resource/ComicHover.png"));
+    GameObject::SetTexture(TEXTURE_COMIC_PRESS, m_driver->getTexture("Resource/ComicPress.png"));
+    GameObject::SetTexture(TEXTURE_MENU_BG, m_driver->getTexture("Resource/MenuBG.png"));
+    GameObject::SetTexture(TEXTURE_NEXT_NORMAL, m_driver->getTexture("Resource/NextNormal.png"));
+    GameObject::SetTexture(TEXTURE_NEXT_HOVER, m_driver->getTexture("Resource/NextHover.png"));
+    GameObject::SetTexture(TEXTURE_NEXT_PRESS, m_driver->getTexture("Resource/NextPress.png"));
+    GameObject::SetTexture(TEXTURE_NEXT_DISABLE, m_driver->getTexture("Resource/NextDisable.png"));
+    GameObject::SetTexture(TEXTURE_LAST_NORMAL, m_driver->getTexture("Resource/LastNormal.png"));
+    GameObject::SetTexture(TEXTURE_LAST_HOVER, m_driver->getTexture("Resource/LastHover.png"));
+    GameObject::SetTexture(TEXTURE_LAST_PRESS, m_driver->getTexture("Resource/LastPress.png"));
+    GameObject::SetTexture(TEXTURE_LAST_DISABLE, m_driver->getTexture("Resource/LastDisable.png"));
 }

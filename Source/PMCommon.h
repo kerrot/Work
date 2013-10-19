@@ -16,6 +16,7 @@ using namespace PMTypeDefine;
 #include <map>
 #include <list>
 #include <set>
+#include <string>
 
 #endif // !__PM__COMMON__
 

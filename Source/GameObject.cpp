@@ -3,7 +3,6 @@
 #include <irrlicht.h>
 #include <assert.h>
 
-
 using namespace irr;
 using namespace irr::scene;
 using namespace irr::core;
@@ -11,12 +10,14 @@ using namespace irr::video;
 
 namespace
 {
-    ITexture* m_textures[MAX_TEXTURE];
+    ITexture* s_textures[MAX_TEXTURE];
 }
 
 GameObject::GameObject()
 :
 m_node(0)
+,m_textureID(TEXTURE_NONE)
+,m_renderTarget(0)
 {
     
 }
@@ -168,14 +169,28 @@ void GameObject::SetColor( char a_r, char a_g, char a_b, char a_a )
 
 void GameObject::SetTexture(GameObjectTexture a_index, irr::video::ITexture* a_texture)
 {
-    m_textures[a_index] = a_texture;
+    s_textures[a_index] = a_texture;
+}
+
+irr::video::ITexture* GameObject::GetTexture( GameObjectTexture a_index )
+{
+    return s_textures[a_index];
 }
 
 void GameObject::ChangeTexture( GameObjectTexture a_index )
 {
     if (m_node)
     {
-        m_node->setMaterialTexture(0, m_textures[a_index]);
+        m_textureID = a_index;
+        m_node->setMaterialTexture(0, s_textures[a_index]);
+    }
+}
+
+void GameObject::RecoverTexture()
+{
+    if (m_node)
+    {
+        m_node->setMaterialTexture(0, s_textures[m_textureID]);
     }
 }
 
@@ -191,24 +206,11 @@ PMVector GameObject::GetScale()
     return PMVector(scale.X, scale.Y, scale.Z);
 }
 
-PMVector GameObject::GetAbsoluteScale()
-{
-    vector3df scale(1, 1, 1);
-
-    if (m_node)
-    {
-        const core::matrix4& matrix = m_node->getAbsoluteTransformation();
-        scale = matrix.getScale();
-    }
-
-    return PMVector(scale.X, scale.Y, scale.Z);
-}
-
 bool GameObject::IsVisible()
 {
     if (m_node)
     {
-        return m_node->isVisible();
+        return m_node->isTrulyVisible();
     }
 
     return false;

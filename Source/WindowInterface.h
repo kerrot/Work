@@ -12,6 +12,7 @@ class WindowInterface
 public:
     PMVector GetProjectionPoint(PMVector a_point);
     PMVector TransformByCoordinateSqure(PMVector a_point);
+    virtual PMVector GetPlaneScale();
 
     virtual void Resize(float &a_width, float &a_height);
 
@@ -66,6 +67,7 @@ protected:
 
     static UInt32 m_idNow;
     bool m_enabled;
+    bool m_shadowDirty;
     UInt32 m_id;
 
     float m_width;

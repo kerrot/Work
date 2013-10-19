@@ -53,7 +53,7 @@ void LeafObject::UpdatePosition()
     SetPosition(position);
 
     float v = m_velocity.x * m_velocity.x + m_velocity.z + m_velocity.z;
-    float av = v * MAX_ANGULAR_VELOCITY / (MAX_VELOCITY * MAX_VELOCITY) + 0.1;
+    float av = v * MAX_ANGULAR_VELOCITY / (MAX_VELOCITY * MAX_VELOCITY) + 0.5;
     PMVector r = GetRotation();
     r.y += av;
     SetRotation(r);

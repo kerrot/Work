@@ -159,3 +159,9 @@ void ButtonObject::SetButtonDisplay( GameObjectTexture a_n, GameObjectTexture a_
     m_buttonDisplay[BUTTON_DISPLAY_DISABLE] = a_d;
 }
 
+void ButtonObject::Resize( float &a_width, float &a_height )
+{
+    m_width = a_width;
+    m_height = a_height;
+}
+

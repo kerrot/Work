@@ -10,6 +10,7 @@
 #include "AvatarObject.h"
 #include "MenuUIObject.h"
 #include "ButtonObject.h"
+#include "ComicUIObject.h"
 #include "PMDefine.h"
 
 using namespace irr;
@@ -17,10 +18,17 @@ using namespace irr::scene;
 using namespace irr::core;
 using namespace irr::video;
 
+namespace
+{
+    ITexture* s_renderTarget;
+}
+
 GameObjectFactory::GameObjectFactory()
 :
 m_avatar(0)
 ,m_menuUI(0)
+,m_comicUI(0)
+,m_shadowDisplay(0)
 {
 
 }
@@ -37,6 +45,18 @@ GameObjectFactory::~GameObjectFactory()
     {
         delete m_menuUI;
         m_menuUI = 0;
+    }
+
+    if (m_comicUI)
+    {
+        delete m_comicUI;
+        m_comicUI = 0;
+    }
+
+    if (m_shadowDisplay)
+    {
+        delete m_shadowDisplay;
+        m_shadowDisplay = 0;
     }
 
     for (std::vector<LeafObject*>::iterator iter = m_leaves.begin();
@@ -87,6 +107,18 @@ void GameObjectFactory::FactoryInit( ISceneManager* a_mgr, irr::video::IVideoDri
     CreateAvatar();
     CreateGravity();
     CreateResistance();
+
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* node = m_mgr->addAnimatedMeshSceneNode(mesh);
+    node->setMaterialFlag(EMF_LIGHTING, false);
+    node->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+    node->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
+
+    m_shadowDisplay = new GameObject();
+    m_shadowDisplay->SetNode(node);
+    m_shadowDisplay->SetScale(PMVector(256, 1, 256));
+
+    s_renderTarget = m_driver->addRenderTargetTexture(dimension2d<u32>(2048, 2048));
 }
 
 std::vector<LeafObject*>& GameObjectFactory::GetLeaves()
@@ -125,7 +157,7 @@ void GameObjectFactory::CreateAvatar()
 
     m_avatar->m_target.SetPosition(0, 80, 1000);
 
-    m_avatar->SetPosition(PMVector(-10, 00, 350));
+    m_avatar->SetPosition(PMVector(-10, 0, 350));
     m_avatar->SetHeadPosition(PMVector(0, 80, -300));
 }
 
@@ -323,6 +355,7 @@ MenuUIObject* GameObjectFactory::GetMenuUI()
     IAnimatedMeshSceneNode* menuNode = m_mgr->addAnimatedMeshSceneNode(mesh);
     menuNode->setMaterialFlag(EMF_LIGHTING, false);
     menuNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+    menuNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
 
     IAnimatedMesh* uiMesh = m_mgr->getMesh("Resource/Plane.3DS");
     IAnimatedMeshSceneNode* uiNode = m_mgr->addAnimatedMeshSceneNode(uiMesh, menuNode);
@@ -337,7 +370,7 @@ MenuUIObject* GameObjectFactory::GetMenuUI()
 
     m_menuUI = new MenuUIObject(ui);
     m_menuUI->SetNode(menuNode);
-    m_menuUI->ChangeTexture(TEXTURE_RESIZE);
+    m_menuUI->ChangeTexture(TEXTURE_MENU_BG);
 
     float width = MAX_VELOCITY, height = MAX_VELOCITY;
     m_menuUI->Resize(width, height);
@@ -350,7 +383,11 @@ MenuUIObject* GameObjectFactory::GetMenuUI()
 
     m_menuUI->m_startButton = CreateButton();
     m_menuUI->m_startButton->m_node->setParent(menuNode);
-    m_menuUI->m_startButton->ChangeTexture(TEXTURE_CLOSE_NORMAL);
+    m_menuUI->m_startButton->ChangeTexture(TEXTURE_START_NORMAL);
+
+    m_menuUI->m_comicButton = CreateButton();
+    m_menuUI->m_comicButton->m_node->setParent(menuNode);
+    m_menuUI->m_comicButton->ChangeTexture(TEXTURE_COMIC_NORMAL);
 
     m_menuUI->Init();
 
@@ -373,4 +410,120 @@ ButtonObject* GameObjectFactory::CreateButton()
     m_windows[btn->GetId()] = btn;
 
     return btn;
+}
+
+position2d<s32> ComputeShadow(ShadowData& a_pos, dimension2d<u32>& a_shadowSize)
+{    
+    return position2d<s32>( a_pos.x * 8 + 1024 - a_shadowSize.Width / 2, 
+                            (-a_pos.y) * 8 + 1024 - a_shadowSize.Height / 2);
+}
+
+void GameObjectFactory::DrawShadow(GameObject* a_object, std::vector<ShadowData>& a_shadows, PMVector a_shift)
+{
+    if (!a_object || a_shadows.empty())
+    {
+        return;
+    }
+
+    m_shadowDisplay->SetPosition(a_object->GetAbsolutePosition() + a_shift);
+    m_shadowDisplay->SetRotation(a_object->GetAbsoluteRotation());
+
+    m_driver->setRenderTarget(s_renderTarget, true, true, SColor(0, 255, 255, 255));
+    
+    std::vector<ShadowData>::iterator iter = a_shadows.begin();
+    ITexture* cursorT = GameObject::GetTexture(TEXTURE_PLANE_CURSOR);
+    dimension2d<u32> cursorSize(cursorT->getOriginalSize());
+    position2d<s32> cursorPos = ComputeShadow(*iter, cursorSize);
+    m_driver->draw2DImage(cursorT, cursorPos, rect<s32>(0 , 0, 64, 64), 0, video::SColor(255, 255, 255, 255), true);
+    ++iter;
+    ITexture* shadowT = GameObject::GetTexture(TEXTURE_PLANE_SHADOW);
+    for (; iter != a_shadows.end(); ++iter)
+    {
+        dimension2d<u32> shadowSize(shadowT->getOriginalSize());
+        position2d<s32> shadowPos = ComputeShadow(*iter, shadowSize);
+        m_driver->draw2DImage(shadowT, shadowPos, rect<s32>(0 , 0, shadowSize.Width, shadowSize.Height), 0, video::SColor(255, 255, 255, 255), true);
+    }
+
+    m_driver->setRenderTarget(0);
+    m_shadowDisplay->m_node->setMaterialTexture(0, s_renderTarget);
+}
+
+ComicUIObject* GameObjectFactory::GetComicUI()
+{
+    if (m_comicUI)
+    {
+        m_comicUI->SetVisible(true);
+        m_comicUI->SetEnabled(true);
+        PMVector avatarPos = m_avatar->GetAbsolutePosition();
+        PMVector headPos = m_avatar->GetHeadPosition();
+        avatarPos.y += headPos.y;
+        m_comicUI->SetPosition(avatarPos);
+        m_comicUI->SetRotation(-90, 0, 0);
+        return m_comicUI;
+    }
+
+    IAnimatedMesh* mesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* comicNode = m_mgr->addAnimatedMeshSceneNode(mesh);
+    comicNode->setMaterialFlag(EMF_LIGHTING, false);
+    comicNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+    comicNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
+
+    IAnimatedMesh* uiMesh = m_mgr->getMesh("Resource/Plane.3DS");
+    IAnimatedMeshSceneNode* uiNode = m_mgr->addAnimatedMeshSceneNode(uiMesh, comicNode);
+    uiNode->setMaterialFlag(EMF_LIGHTING, false);
+    uiNode->setMaterialType(EMT_TRANSPARENT_ALPHA_CHANNEL);
+    uiNode->setMaterialFlag(EMF_BACK_FACE_CULLING, false);
+
+    GameObject* ui = new GameObject();
+    ui->SetNode(uiNode);
+    ui->SetVisible(false);
+    m_display.push_back(ui);
+
+    m_comicUI = new ComicUIObject(ui);
+    m_comicUI->SetNode(comicNode);
+    m_comicUI->ChangeTexture(TEXTURE_CLOSE_DISABLE);
+
+    PMVector avatarPos = m_avatar->GetAbsolutePosition();
+    PMVector headPos = m_avatar->GetHeadPosition();
+    avatarPos.y += headPos.y;
+    m_comicUI->SetPosition(avatarPos);
+    m_comicUI->SetRotation(-90, 0, 0);
+
+    m_comicUI->m_closeButton = CreateButton();
+    m_comicUI->m_closeButton->m_node->setParent(comicNode);
+    m_comicUI->m_closeButton->ChangeTexture(TEXTURE_CLOSE_NORMAL);
+
+    m_comicUI->m_upButton = CreateButton();
+    m_comicUI->m_upButton->m_node->setParent(comicNode);
+    m_comicUI->m_upButton->ChangeTexture(TEXTURE_LAST_NORMAL);
+
+    m_comicUI->m_downButton = CreateButton();
+    m_comicUI->m_downButton->m_node->setParent(comicNode);
+    m_comicUI->m_downButton->ChangeTexture(TEXTURE_NEXT_NORMAL);
+
+    m_comicUI->Init();
+
+    m_windows[m_comicUI->GetId()] = m_comicUI;
+    m_mainWindows[m_comicUI->GetId()] = m_comicUI;
+
+    return m_comicUI;
+}
+
+std::pair<UInt32, UInt32> GameObjectFactory::LoadTexture( GameObject* a_object, std::string a_name )
+{
+    std::pair<UInt32, UInt32> textureSize(0, 0);
+
+    if (a_object && a_object->m_node)
+    {
+        ITexture* t = m_driver->getTexture(a_name.c_str());
+        if (t)
+        {
+            a_object->m_node->setMaterialTexture(0, t);
+            const core::dimension2d<u32>& tmp = t->getOriginalSize();
+            textureSize.first = tmp.Width;
+            textureSize.second = tmp.Height;
+        }
+    }
+
+    return textureSize;
 }
