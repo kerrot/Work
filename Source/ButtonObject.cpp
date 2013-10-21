@@ -1,8 +1,8 @@
 #include "ButtonObject.h"
 
-ButtonObject::ButtonObject()
+ButtonObject::ButtonObject(GameObject* a_shadow)
 :
-WindowInterface(this)
+WindowInterface(this, a_shadow)
 ,m_state(BUTTON_STATE_NORMAL)
 {
 
@@ -15,7 +15,7 @@ ButtonObject::~ButtonObject()
 
 void ButtonObject::InterAction( CursorData &a_data )
 {
-    if (a_data.cursorID == 0)
+    if (a_data.cursorID == 0 || !m_enabled)
     {
         return;
     }
@@ -164,4 +164,3 @@ void ButtonObject::Resize( float &a_width, float &a_height )
     m_width = a_width;
     m_height = a_height;
 }
-

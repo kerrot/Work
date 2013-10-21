@@ -11,7 +11,7 @@ public:
     virtual PMVector GetPlaneScale();
 private:
     friend class GameObjectFactory;
-    WindObject(GameObject* a_ui, GameObject* a_rangeUI);
+    WindObject(GameObject* a_ui, GameObject* a_rangeUI, GameObject* a_shadow);
     virtual ~WindObject();
 
     virtual void ChangeState(WindowState a_state);

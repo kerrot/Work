@@ -3,9 +3,9 @@
 #include "dirent.h"
 #include "GameObjectFactory.h"
 
-ComicUIObject::ComicUIObject(GameObject* a_ui)
+ComicUIObject::ComicUIObject(GameObject* a_ui, GameObject* a_shadow)
 :
-MainWindowInterface(this, a_ui)
+MainWindowInterface(this, a_ui, a_shadow)
 ,m_index(0)
 ,m_oriWidth(0)
 ,m_oriHeight(0)
@@ -39,8 +39,6 @@ void ComicUIObject::Init()
         closedir(dp);    
     }
 
-    UpdatePage();
-
     m_closeButton->SetPosition(0.5, SUBWINDOW_DISTANCE, 0.5);
     float w = 10, h = 10;
     m_closeButton->Resize(w, h);
@@ -64,6 +62,8 @@ void ComicUIObject::Init()
     m_downButton->SetButtonDisplay(TEXTURE_NEXT_NORMAL, TEXTURE_NEXT_HOVER, TEXTURE_NEXT_PRESS, TEXTURE_NEXT_DISABLE);
     m_downButton->ReleaseEvent.AddCallBack(this, &ComicUIObject::PageDown);
     m_subWindows.push_back(m_downButton);
+
+    UpdatePage();
 }
 
 void ComicUIObject::Close()
@@ -96,6 +96,9 @@ void ComicUIObject::UpdatePage()
     {
         std::pair<UInt32, UInt32> textureSize = sGameObjectFactory.LoadTexture(this, m_comicList[m_index]);
         InitSize(textureSize.first / 10, textureSize.second / 10);
+
+        m_upButton->SetEnabled(m_index > 0);
+        m_downButton->SetEnabled(m_index < m_comicList.size() - 1);
     }
 }
 

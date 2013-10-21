@@ -14,7 +14,7 @@ public:
     Delegate ReleaseEvent;
 protected:
     friend class GameObjectFactory;
-    ButtonObject();
+    ButtonObject(GameObject* a_shadow);
     virtual ~ButtonObject();
 
     enum ButtonDisplay

@@ -3,9 +3,9 @@
 #include "GameWorld.h"
 #include "GameObjectFactory.h"
 
-MenuUIObject::MenuUIObject(GameObject* a_ui)
+MenuUIObject::MenuUIObject(GameObject* a_ui, GameObject* a_shadow)
 :
-MainWindowInterface(this, a_ui)
+MainWindowInterface(this, a_ui, a_shadow)
 {
 
 }

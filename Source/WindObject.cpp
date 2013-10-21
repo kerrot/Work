@@ -4,9 +4,9 @@
 #include "GameWorld.h"
 #include "BasketObject.h"
 
-WindObject::WindObject(GameObject* a_ui, GameObject* a_rangeUI)
+WindObject::WindObject(GameObject* a_ui, GameObject* a_rangeUI, GameObject* a_shadow)
 :
-MainWindowInterface(this, a_ui)
+MainWindowInterface(this, a_ui, a_shadow)
 ,m_force(GRAVITY_ACCELERATION * 3)
 ,m_rangeUI(a_rangeUI)
 {

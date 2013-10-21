@@ -6,9 +6,9 @@
 #include "GameObjectFactory.h"
 #include "AvatarObject.h"
 
-MainWindowInterface::MainWindowInterface( GameObject* a_object, GameObject* a_ui )
+MainWindowInterface::MainWindowInterface( GameObject* a_object, GameObject* a_ui, GameObject* a_shadow)
 :
-WindowInterface(a_object)
+WindowInterface(a_object, a_shadow)
 ,m_ui(a_ui)
 ,m_attachedHand(0)
 ,m_range(MAX_VELOCITY)

@@ -16,7 +16,7 @@ public:
     virtual void SetNormalDirection(PMVector a_normal, PMVector a_planeVectorX, PMVector a_planeVectorY);
     virtual void SetEnabled(bool a_result);
 protected:
-    MainWindowInterface(GameObject* a_object, GameObject* a_ui);
+    MainWindowInterface(GameObject* a_object, GameObject* a_ui, GameObject* a_shadow);
     virtual ~MainWindowInterface();
 
     enum WindowState

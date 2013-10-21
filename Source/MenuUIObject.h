@@ -12,7 +12,7 @@ public:
     
 private:
     friend class GameObjectFactory;
-    MenuUIObject(GameObject* a_ui);
+    MenuUIObject(GameObject* a_ui, GameObject* a_shadow);
     virtual ~MenuUIObject();
 
     void Init();

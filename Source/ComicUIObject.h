@@ -12,7 +12,7 @@ public:
 
 private:
     friend class GameObjectFactory;
-    ComicUIObject(GameObject* a_ui);
+    ComicUIObject(GameObject* a_ui, GameObject* a_shadow);
     virtual ~ComicUIObject();
 
     void Init();

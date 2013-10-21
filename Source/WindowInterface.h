@@ -25,7 +25,7 @@ public:
     void UpdateFingers(std::map<UInt32, PMVector>& a_data);
     virtual void SetEnabled(bool a_result);
 protected:
-    WindowInterface(GameObject* a_object);
+    WindowInterface(GameObject* a_object, GameObject* a_shadow);
     virtual ~WindowInterface();
 
     enum WindowSetting
@@ -74,6 +74,7 @@ protected:
     float m_height;
 
     GameObject* m_object;
+    GameObject* m_shadow;
 
     PMVector m_normal;
     PMVector m_planeVectorX;

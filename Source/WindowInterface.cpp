@@ -9,9 +9,10 @@
 
 UInt32 WindowInterface::m_idNow = 0;
 
-WindowInterface::WindowInterface( GameObject* a_object)
+WindowInterface::WindowInterface( GameObject* a_object, GameObject* a_shadow)
 :
 m_object(a_object)
+,m_shadow(a_shadow)
 ,m_normal(0, 1, 0)
 ,m_planeVectorX(1, 0, 0)
 ,m_planeVectorY(0, 0, 1)
@@ -22,6 +23,8 @@ m_object(a_object)
 ,m_shadowDirty(false)
 {    
     assert(m_object);
+    assert(m_shadow);
+    m_shadow->SetVisible(false);
 }
 
 WindowInterface::~WindowInterface()
@@ -73,7 +76,8 @@ void WindowInterface::UpdateFingers( std::map<UInt32, PMVector>& a_data )
 {
     //HideAllShadows();
 
-    sGameObjectFactory.DrawShadow(0, std::vector<ShadowData>(), PMVector());
+    //sGameObjectFactory.DrawShadow(0, std::vector<ShadowData>(), PMVector());
+    m_shadow->SetVisible(false);
 
     if (!m_object->IsVisible())
     {
@@ -251,7 +255,11 @@ void WindowInterface::UpdateShadow(CursorData& a_data)
          
         float shadowY = (view.Dot(m_normal) > 0) ? 1.0f : -1.0f;
 
-        sGameObjectFactory.DrawShadow(m_object, shadowData, shadowY * m_normal);
+        m_shadow->SetVisible(true);
+        m_shadow->SetPosition(m_object->GetAbsolutePosition() + shadowY * m_normal);
+        m_shadow->SetRotation(m_object->GetAbsoluteRotation());
+
+        sGameObjectFactory.DrawShadow(m_shadow, shadowData);
         //m_shadowDirty = true;
     }
 //     else if (m_shadowDirty)

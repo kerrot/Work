@@ -29,8 +29,6 @@ class MenuUIObject;
 class ComicUIObject;
 class ButtonObject;
 
-struct PMVector;
-
 struct ShadowData
 {
     float x;
@@ -61,7 +59,7 @@ public:
 
     
     std::pair<UInt32, UInt32> LoadTexture(GameObject* a_object, std::string a_name);
-    void DrawShadow(GameObject* a_object, std::vector<ShadowData>& a_shadows, PMVector a_shift);
+    void DrawShadow(GameObject* a_object, std::vector<ShadowData>& a_shadows);
 
     void HideAllHand();
 
@@ -90,7 +88,6 @@ private:
 
     MenuUIObject* m_menuUI;
     ComicUIObject* m_comicUI;
-    GameObject* m_shadowDisplay;
 };
 
 #define sGameObjectFactory GameObjectFactory::GetInstance()
