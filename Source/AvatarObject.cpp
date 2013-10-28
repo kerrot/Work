@@ -60,7 +60,7 @@ void AvatarObject::SetPosition( PMVector a_position )
     UpdateHeadLookAt();
 }
 
-void AvatarObject::LookRotate(PMVector a_rotation)
+void AvatarObject::AppendLookRotate(PMVector a_rotation)
 {
     m_lookRotation += a_rotation;
 
@@ -79,6 +79,12 @@ void AvatarObject::LookRotate(PMVector a_rotation)
         }
     }
 
+    UpdateHeadLookAt();
+}
+
+void AvatarObject::SetLookRotate( PMVector a_rotation )
+{
+    m_lookRotation = a_rotation;
     UpdateHeadLookAt();
 }
 
@@ -124,9 +130,6 @@ void AvatarObject::UpdateHeadLookAt()
 {
     PMVector lookVector = m_target.GetAbsolutePosition() - m_head.GetAbsolutePosition();
     GameObject::RotationToDirection(lookVector, m_lookRotation);
-
-    PMVector v = m_head.GetAbsolutePosition();
-    PMVector s = m_target.GetAbsolutePosition();
 
     m_head.SetTarget(m_head.GetAbsolutePosition() + lookVector);
 }

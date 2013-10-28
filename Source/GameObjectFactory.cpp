@@ -13,6 +13,8 @@
 #include "ComicUIObject.h"
 #include "PMDefine.h"
 
+#include "OVRMachine.h"
+
 using namespace irr;
 using namespace irr::scene;
 using namespace irr::core;
@@ -133,6 +135,12 @@ void GameObjectFactory::CreateAvatar()
     m_avatar->SetNode(node);
     
     ICameraSceneNode* cam = m_mgr->addCameraSceneNode(node);
+
+    if (sOVRMachine.IsRiftSceneMode())
+    {
+        sOVRMachine.SetMainCamera(cam);
+    }   
+
     m_avatar->m_head.SetNode(cam);
     m_avatar->m_target.SetNode(m_mgr->addSphereSceneNode(3, 16, node));
 

@@ -17,7 +17,8 @@ public:
     void TurnLeft();
     void TurnRight();
 
-    void LookRotate(PMVector a_rotation);
+    void AppendLookRotate(PMVector a_rotation);
+    void SetLookRotate(PMVector a_rotation);
 
     virtual void SetPosition(PMVector a_position);
     virtual void SetRotation(PMVector a_rotation);

@@ -1,21 +1,16 @@
 #include "PrimateMurder.h"
-#include "irrlicht.h"
+
 #include "GameWorld.h"
 #include "GamePhysics.h"
 #include "GameObjectFactory.h"
 #include "LeapDevice.h"
-#include "COVRSceneManagerDecorator.h"
+//#include "COVRSceneManagerDecorator.h"
 #include "AvatarObject.h"
 #include "GameTime.h"
 
+#include "OVRMachine.h"
+
 #include <assert.h>
-
-using namespace irr;
-
-using namespace scene;
-using namespace video;
-using namespace gui;
-using namespace core;
 
 enum DEVICE_SETTING
 {
@@ -100,21 +95,42 @@ bool PrimateMurder::OnEvent(const SEvent& event)
         case KEY_KEY_H:
             m_leap->AdjustByHand();
             break;
+        case KEY_KEY_1:
+            sOVRMachine.Test(0.1, 0, 0);
+            break;
+        case KEY_KEY_2:
+            sOVRMachine.Test(-0.1, 0, 0);
+            break;
+        case KEY_KEY_3:
+            sOVRMachine.Test(0, 0.1, 0);
+            break;
+        case KEY_KEY_4:
+            sOVRMachine.Test(0, -0.1, 0);
+            break;
+        case KEY_KEY_5:
+            sOVRMachine.Test(0, 0, 0.1);
+            break;
+        case KEY_KEY_6:
+            sOVRMachine.Test(0, 0, -0.1);
+            break;
         }
     }
 
     if (event.EventType == irr::EET_MOUSE_INPUT_EVENT && event.MouseInput.Event == EMIE_MOUSE_MOVED)
     {
-        PMVector rotation;
+        if (!sOVRMachine.IsRiftSceneMode())
+        {
+            PMVector rotation;
 
-        rotation.y = float(event.MouseInput.X - m_lastMouseX) / CENTER_X * 180;
-        rotation.x = float(event.MouseInput.Y - m_lastMouseY) / CENTER_Y * 180;
+            rotation.y = float(event.MouseInput.X - m_lastMouseX) / CENTER_X * 180;
+            rotation.x = float(event.MouseInput.Y - m_lastMouseY) / CENTER_Y * 180;
 
-        m_lastMouseX = event.MouseInput.X;
-        m_lastMouseY = event.MouseInput.Y;
+            m_lastMouseX = event.MouseInput.X;
+            m_lastMouseY = event.MouseInput.Y;
 
-        AvatarObject* avatar = sGameObjectFactory.GetAvatar();
-        avatar->LookRotate(rotation);
+            AvatarObject* avatar = sGameObjectFactory.GetAvatar();
+            avatar->AppendLookRotate(rotation);
+        }
     }
 
     // passing down the event
@@ -130,7 +146,7 @@ void PrimateMurder::Init()
     SIrrlichtCreationParameters params;
     params.DriverType = EDT_OPENGL;
     params.WindowSize = dimension2d<u32>(SCREEN_WIDTH, SCREEN_HEIGHT);
-    params.Fullscreen = false;
+    params.Fullscreen = true;
     params.EventReceiver = this;
     m_device = createDeviceEx(params);
     m_device->getCursorControl()->setVisible(false);
@@ -145,6 +161,12 @@ void PrimateMurder::Init()
     m_smgr = m_device->getSceneManager();
     //m_smgr = new COVRSceneManagerDecorator(m_smgr);
     m_env = m_device->getGUIEnvironment();
+
+    if (sOVRMachine.IsRiftSceneMode())
+    {
+        sOVRMachine.Init(m_device);
+    }
+
     InitTexture();
 
     sGameObjectFactory.FactoryInit(m_smgr, m_driver);
@@ -179,12 +201,17 @@ void PrimateMurder::Run()
                 lastUpdateTime = current;
             }
 
-            m_driver->beginScene(true, true, SColor(255, 100, 100, 100));
-
-            m_smgr->drawAll();
-            m_env->drawAll();
-
-            m_driver->endScene();
+            if (sOVRMachine.IsRiftSceneMode())
+            {
+                sOVRMachine.Draw();
+            }
+            else
+            {
+                m_driver->beginScene(true, true, SColor(255, 100, 100, 100));
+                m_smgr->drawAll();
+                m_env->drawAll();
+                m_driver->endScene();
+            }
 
             int fps = m_driver->getFPS();
 
