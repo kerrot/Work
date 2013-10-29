@@ -204,6 +204,13 @@ void OVRMachine::SetMainCamera( ICameraSceneNode* a_camera )
     m_pLeftEye = m_smgr->addEmptySceneNode(m_pHeadZ, 0);
     m_pRghtEye = m_smgr->addEmptySceneNode(m_pHeadZ, 0); 
 
+    m_pTarget = m_smgr->addEmptySceneNode(m_pHeadZ, 0);
+    m_pUp = m_smgr->addEmptySceneNode(m_pHeadZ, 0);
+
+    m_mainCamera->addChild(m_pYaw);
+    m_pTarget->setPosition(m_mainCamera->getTarget() - m_mainCamera->getAbsolutePosition());
+    m_pUp->setPosition(m_mainCamera->getUpVector());
+
     f32 m_fEyeSeparation = hmd.InterpupillaryDistance/2.0f;
     m_pLeftEye->setPosition(vector3df( m_fEyeSeparation, 0.0f, 0.0f));
     m_pRghtEye->setPosition(vector3df(-m_fEyeSeparation, 0.0f, 0.0f));
@@ -229,20 +236,20 @@ void OVRMachine::Draw()
     }
 
     matrix4 l_cMat;
-    pitch *=  irr::core::RADTODEG;
+    pitch *=  -irr::core::RADTODEG;
     yaw *= -irr::core::RADTODEG;
-    roll *= -irr::core::RADTODEG;
+    roll *= irr::core::RADTODEG;
     m_pYaw->setRotation(m_mainCamera->getAbsoluteTransformation().getRotationDegrees());
     m_pHeadY->setRotation(vector3df(0, yaw, 0));
     m_pHeadX->setRotation(vector3df(pitch, 0, 0));
     m_pHeadZ->setRotation(vector3df(0, 0, roll));
-    l_cMat.setRotationDegrees(m_pHeadZ->getAbsoluteTransformation().getRotationDegrees());
-    vector3df vFore(0, 0, 1);
-    vector3df vUp(0, 1, 0);
-    l_cMat.transformVect(vFore);
-    l_cMat.transformVect(vUp);
-    m_mainCamera->setTarget(m_mainCamera->getAbsolutePosition() + vFore);
-    m_mainCamera->setUpVector(vUp);
+//     l_cMat.setRotationDegrees(m_pHeadZ->getAbsoluteTransformation().getRotationDegrees());
+//     vector3df vFore(0, 0, 1);
+//     vector3df vUp(0, 1, 0);
+//     l_cMat.transformVect(vFore);
+//     l_cMat.transformVect(vUp);
+//     m_mainCamera->setTarget(m_mainCamera->getAbsolutePosition() + vFore);
+//     m_mainCamera->setUpVector(vUp);
 
 
     m_driver->beginScene(true, true, SColor(0,100,100,100));
@@ -252,8 +259,8 @@ void OVRMachine::Draw()
     m_driver->setRenderTarget(m_pRenderTexture, true, true, SColor(0,0,0,0));
 
     m_riftCamera->setPosition(m_mainCamera->getAbsolutePosition() + m_pLeftEye->getAbsolutePosition());
-    m_riftCamera->setTarget  (m_mainCamera->getTarget() + m_pLeftEye->getAbsolutePosition());
-    m_riftCamera->setUpVector(m_mainCamera->getUpVector());
+    m_riftCamera->setTarget  (m_pTarget->getAbsolutePosition() + m_pLeftEye->getAbsolutePosition());
+    m_riftCamera->setUpVector(m_pUp->getAbsolutePosition() - m_pYaw->getAbsolutePosition());
 
     m_riftCamera->setProjectionMatrix(m_cProjectionLeft);
 
@@ -272,8 +279,8 @@ void OVRMachine::Draw()
     m_driver->setRenderTarget(m_pRenderTexture, true, true, SColor(0,0,0,0));
 
     m_riftCamera->setPosition(m_mainCamera->getAbsolutePosition() + m_pRghtEye->getAbsolutePosition());
-    m_riftCamera->setTarget  (m_mainCamera->getTarget  () + m_pRghtEye->getAbsolutePosition());
-    m_riftCamera->setUpVector(m_mainCamera->getUpVector());
+    m_riftCamera->setTarget  (m_pTarget->getAbsolutePosition() + m_pRghtEye->getAbsolutePosition());
+    m_riftCamera->setUpVector(m_pUp->getAbsolutePosition() - m_pYaw->getAbsolutePosition());
 
     m_riftCamera->setProjectionMatrix(m_cProjectionRght);
 

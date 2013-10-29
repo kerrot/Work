@@ -38,6 +38,8 @@ private:
     ISceneNode *m_pYaw;
     ISceneNode *m_pLeftEye;
     ISceneNode *m_pRghtEye;
+    ISceneNode *m_pTarget;
+    ISceneNode *m_pUp;
 
     ICameraSceneNode* m_mainCamera;
     ICameraSceneNode* m_riftCamera;
