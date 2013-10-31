@@ -260,6 +260,10 @@ void PrimateMurder::SetupWorld()
                                         vector3df(-450, 1000, -750), 
                                         SColorf(0.3f, 1.0f, 1.0f, 1.0f), 
                                         2500);
+
+    //m_smgr->addBillboardTextSceneNode(m_device->getGUIEnvironment()->getBuiltInFont(), L"Clear", 0, dimension2df(100, 100), vector3df(0, 100, 500));
+//     ITextSceneNode* text = m_smgr->addTextSceneNode(m_device->getGUIEnvironment()->getBuiltInFont(), L"Clear", SColor(255, 0, 0, 0), 0, vector3df(0, 100, 500));
+//     text->setScale(vector3df(5, 5, 5));
 }
 
 void PrimateMurder::InitTexture()

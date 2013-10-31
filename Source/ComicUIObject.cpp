@@ -74,7 +74,7 @@ void ComicUIObject::Close()
 
 void ComicUIObject::PageUp()
 {
-    if (m_index - 1 >= 0)
+    if (m_index >= 1)
     {
         --m_index;
         UpdatePage();

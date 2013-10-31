@@ -7,6 +7,8 @@
 #include "PMType.h"
 #include <stdio.h>
 
+#define HAND_OFFSET  200
+
 using namespace Leap;
 
 LeapDevice::LeapDevice()
@@ -116,7 +118,7 @@ void LeapDevice::UpdateHands( const Leap::Frame &a_frame )
             HandObject* handObject = sGameObjectFactory.GetorCreateHand((UInt32)hand.id());
             handObject->SetVisible(true);
             Vector palmPos = hand.palmPosition();
-            handObject->SetPosition(PMVector(palmPos.x, palmPos.y, -palmPos.z));
+            handObject->SetPosition(PMVector(palmPos.x, palmPos.y, -palmPos.z + HAND_OFFSET));
 
             float rotationX = - hand.palmNormal().pitch() - PI / 2;
             float rotationY = hand.direction().yaw();
@@ -134,7 +136,7 @@ void LeapDevice::UpdateHands( const Leap::Frame &a_frame )
                 {
                     const Finger finger = fingers[j];
                     Vector tipPos = finger.tipPosition();
-                    handObject->SetFingerPosition(j, PMVector(tipPos.x, tipPos.y, -tipPos.z));
+                    handObject->SetFingerPosition(j, PMVector(tipPos.x, tipPos.y, -tipPos.z + HAND_OFFSET));
 
                     fingerData[finger.id()] = handObject->GetFingerAbsolutePosition(j);
                 }

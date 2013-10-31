@@ -20,6 +20,9 @@ using namespace irr::scene;
 using namespace irr::core;
 using namespace irr::video;
 
+#define UI_DEFAULT_Y  150
+#define UI_DEFAULT_Z  200
+
 namespace
 {
     ITexture* s_renderTarget;
@@ -130,7 +133,7 @@ void GameObjectFactory::CreateAvatar()
 {
     m_avatar = new AvatarObject();
 
-    ISceneNode* node = m_mgr->addSphereSceneNode(15);
+    ISceneNode* node = m_mgr->addEmptySceneNode();
     node->setMaterialFlag(EMF_LIGHTING, false);
     m_avatar->SetNode(node);
     
@@ -142,12 +145,12 @@ void GameObjectFactory::CreateAvatar()
     }   
 
     m_avatar->m_head.SetNode(cam);
-    m_avatar->m_target.SetNode(m_mgr->addSphereSceneNode(3, 16, node));
+    m_avatar->m_target.SetNode(m_mgr->addEmptySceneNode(node));
 
     m_avatar->m_target.SetPosition(0, 80, 1000);
 
-    m_avatar->SetPosition(PMVector(-10, 0, 350));
-    m_avatar->SetHeadPosition(PMVector(0, 80, -300));
+    m_avatar->SetPosition(PMVector(-10, 0, 50));
+    m_avatar->SetHeadPosition(PMVector(0, 80, 0));
 }
 
 LeafObject* GameObjectFactory::CreateLeaf()
@@ -198,8 +201,9 @@ BasketObject* GameObjectFactory::CreateBasket()
     basket->SetNode(node);
 
     ui->SetPosition(0, 50, 0);
-    ui->ChangeTexture(TEXTURE_RESIZE);
+    ui->ChangeTexture(TEXTURE_CLOSE_PRESS);
     ui->SetScale(PMVector(100, 0, 60));
+    ui->SetVisible(false);
 
     m_collidables.push_back(basket);
 
@@ -345,7 +349,8 @@ MenuUIObject* GameObjectFactory::GetMenuUI()
         m_menuUI->SetEnabled(true);
         PMVector avatarPos = m_avatar->GetAbsolutePosition();
         PMVector headPos = m_avatar->GetHeadPosition();
-        avatarPos.y += headPos.y;
+        avatarPos.y += UI_DEFAULT_Y;
+        avatarPos.z += UI_DEFAULT_Z;
         m_menuUI->SetPosition(avatarPos);
         m_menuUI->SetRotation(-90, 0, 0);
         return m_menuUI;
@@ -385,7 +390,7 @@ MenuUIObject* GameObjectFactory::GetMenuUI()
 
     float width = MAX_VELOCITY, height = MAX_VELOCITY;
     m_menuUI->Resize(width, height);
-    m_menuUI->SetPosition(m_avatar->m_target.GetAbsolutePosition());
+    m_menuUI->SetPosition(m_avatar->GetAbsolutePosition() + PMVector(0, UI_DEFAULT_Y, UI_DEFAULT_Z));
     m_menuUI->SetRotation(-90, 0, 0);
 
     m_menuUI->m_closeButton = CreateButton();
@@ -475,7 +480,8 @@ ComicUIObject* GameObjectFactory::GetComicUI()
         m_comicUI->SetEnabled(true);
         PMVector avatarPos = m_avatar->GetAbsolutePosition();
         PMVector headPos = m_avatar->GetHeadPosition();
-        avatarPos.y += headPos.y;
+        avatarPos.y += UI_DEFAULT_Y;
+        avatarPos.z += UI_DEFAULT_Z;
         m_comicUI->SetPosition(avatarPos);
         m_comicUI->SetRotation(-90, 0, 0);
         return m_comicUI;
@@ -515,7 +521,8 @@ ComicUIObject* GameObjectFactory::GetComicUI()
 
     PMVector avatarPos = m_avatar->GetAbsolutePosition();
     PMVector headPos = m_avatar->GetHeadPosition();
-    avatarPos.y += headPos.y;
+    avatarPos.y += UI_DEFAULT_Y;
+    avatarPos.z += UI_DEFAULT_Z;
     m_comicUI->SetPosition(avatarPos);
     m_comicUI->SetRotation(-90, 0, 0);
 

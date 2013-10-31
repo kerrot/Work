@@ -58,6 +58,7 @@ void GameWorld::WorldInit()
     natrualWind->ChangeRange(r);
     natrualWind->SetNormalDirection(PMVector(0, 0, 1), PMVector(-1, 0, 0), PMVector(0, 1, 0));
     natrualWind->SetEnabled(false);
+    natrualWind->SetVisible(false);
 
     m_gameWind = dynamic_cast<WindObject*>(sGameObjectFactory.CreateWind());
     m_gameWind->SetPosition(0, 100, 300);

@@ -1,7 +1,7 @@
 #include "HandObject.h"
 #include "WindowInterface.h"
 
-#define WINDOW_HAND_DISTANCE 100
+#define WINDOW_HAND_DISTANCE 50
 
 HandObject::HandObject(UInt32 a_id)
 :
@@ -81,7 +81,7 @@ void HandObject::SetRotation( PMVector a_rotation )
     m_down.z = 0;
 
     PMVector absoluteRotation = GetAbsoluteRotation();
-    absoluteRotation.x -= 90;
+    //absoluteRotation.x -= 90;
     GameObject::RotationToDirection(m_down, absoluteRotation);
 
     if (m_window)
