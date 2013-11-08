@@ -221,9 +221,6 @@ void MainWindowInterface::UpdateNormalState( CursorData &a_data )
         {
             WindowFingerData& finger = iter->second;
 
-            float tmpDiffx = abs(finger.distance.x - tmpWidth);
-            float tmpDiffy = abs(finger.distance.y - tmpHeight);
-
             if (finger.distance.z < ATTACH_DISTANCE_SQUARE &&
                 finger.distance.x < tmpWidth &&
                 finger.distance.y < tmpHeight)
@@ -234,7 +231,7 @@ void MainWindowInterface::UpdateNormalState( CursorData &a_data )
 
         if (cursor.distance.x < tmpWidth &&
             cursor.distance.y < tmpHeight &&
-            m_scalePoints.size() > 1)
+            m_scalePoints.size() == 2)
         {
             if (m_canScale)
             {
@@ -245,10 +242,13 @@ void MainWindowInterface::UpdateNormalState( CursorData &a_data )
                     iter != m_scalePoints.end();
                     ++iter)
                 {
-                    PMVector dis = a_data.fingerData[*iter].distance - cursor.distance;
-                    m_scaleDistance += dis.MagnitudeSquared();
+                    if (*iter != a_data.cursorID)
+                    {
+                        PMVector dis = a_data.fingerData[*iter].oriPos - cursor.oriPos;
+                        m_scaleDistance = sqrt(dis.MagnitudeSquared());
+                        break;
+                    }   
                 }
-                m_scaleDistance /= (m_scalePoints.size() - 1);
                 m_lastscaleDistance = m_scaleDistance;
                 m_initRange = m_range;
             }
@@ -304,7 +304,6 @@ void MainWindowInterface::UpdateScaleState( CursorData &a_data )
         return;
     }
 
-    UInt32 count = 0;
     float tmpScaleDistance = 0;
     WindowFingerData& cursor = a_data.fingerData[a_data.cursorID];
     for (std::set<UInt32>::iterator iter = m_scalePoints.begin();
@@ -312,21 +311,18 @@ void MainWindowInterface::UpdateScaleState( CursorData &a_data )
         ++iter)
     {
         std::map<UInt32, WindowFingerData>::iterator fingerIter = a_data.fingerData.find(*iter);
-        if (fingerIter != a_data.fingerData.end())
+        if (fingerIter == a_data.fingerData.end())
         {
-            PMVector dis = fingerIter->second.distance - cursor.distance;
-            tmpScaleDistance += dis.MagnitudeSquared();
-            ++count;
+            ChangeState(WINDOW_STATE_NORMAL);
+            return;
+        }
+        else if (*iter != a_data.cursorID)
+        {
+            PMVector dis = fingerIter->second.oriPos - cursor.oriPos;
+            tmpScaleDistance = sqrt(dis.MagnitudeSquared());
+            break;
         }
     }
-
-    if (count <= 1)
-    {
-        ChangeState(WINDOW_STATE_NORMAL);
-        return;
-    }
-
-    tmpScaleDistance /= (count - 1);
 
     float diffScale = tmpScaleDistance / m_scaleDistance;
     float range = m_initRange * diffScale;
@@ -334,7 +330,7 @@ void MainWindowInterface::UpdateScaleState( CursorData &a_data )
 
     UInt32 current = sGameTime.GetCurrentTimeInMS();
 
-    float change = abs(diffScale - m_lastscaleDistance / m_scaleDistance) * 10;
+    float change = abs(diffScale - m_lastscaleDistance / m_scaleDistance) * 30;
     if (change > STOP_DISTANCE_SQUARE)
     {
         m_releaseTime = current;

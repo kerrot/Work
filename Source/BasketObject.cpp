@@ -3,9 +3,10 @@
 #include "PMType.h"
 #include "GameWorld.h"
 
-BasketObject::BasketObject(GameObject* a_ui)
+BasketObject::BasketObject(GameObject* a_ui, GameObject* a_clear)
 :
 m_ui(a_ui)
+,m_clear(a_clear)
 ,m_fail(false)
 {
 
@@ -53,6 +54,7 @@ void BasketObject::HitObject(LeafObject* a_object )
             if (abs(x - pos.x) <= 50, abs(z - pos.z) <= 30)
             {
                 sGameWorld.BackToNormal();
+                m_clear->SetVisible(true);
             }
         }
     }

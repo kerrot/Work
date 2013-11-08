@@ -10,9 +10,10 @@ public:
 
 private:
     friend class GameObjectFactory;
-    BasketObject(GameObject* a_ui);
+    BasketObject(GameObject* a_ui, GameObject* a_clear);
     virtual ~BasketObject();
 
     bool m_fail;
     GameObject* m_ui;
+    GameObject* m_clear;
 };

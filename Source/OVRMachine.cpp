@@ -65,7 +65,7 @@ namespace
 OVRMachine::OVRMachine()
 :
 m_riftAvailable(false)
-,m_riftSceneMode(true)
+,m_riftSceneMode(false)
 ,m_fLensShift(0)
 ,m_x(0)
 ,m_y(0)

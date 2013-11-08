@@ -169,7 +169,7 @@ void PrimateMurder::Init()
 
     InitTexture();
 
-    sGameObjectFactory.FactoryInit(m_smgr, m_driver);
+    sGameObjectFactory.FactoryInit(m_device);
     sGameTime.Init(m_device->getTimer());
     sGameWorld.WorldInit();
 

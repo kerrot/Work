@@ -5,6 +5,7 @@
 
 namespace irr
 {
+    class IrrlichtDevice;
     namespace scene
     {
         class ISceneManager;
@@ -40,7 +41,7 @@ class GameObjectFactory
 public:
     static GameObjectFactory& GetInstance();
 
-    void FactoryInit(irr::scene::ISceneManager* a_mgr, irr::video::IVideoDriver* a_driver);
+    void FactoryInit(irr::IrrlichtDevice* a_device);
 
     LeafObject* CreateLeaf();
     CollidableObject* CreateWind();
@@ -83,6 +84,7 @@ private:
 
     irr::scene::ISceneManager* m_mgr;
     irr::video::IVideoDriver* m_driver;
+    irr::IrrlichtDevice* m_device;
 
     AvatarObject* m_avatar;
 

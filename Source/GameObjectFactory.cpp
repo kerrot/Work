@@ -23,11 +23,6 @@ using namespace irr::video;
 #define UI_DEFAULT_Y  150
 #define UI_DEFAULT_Z  200
 
-namespace
-{
-    ITexture* s_renderTarget;
-}
-
 GameObjectFactory::GameObjectFactory()
 :
 m_avatar(0)
@@ -97,10 +92,11 @@ GameObjectFactory::~GameObjectFactory()
     m_display.clear();
 }
 
-void GameObjectFactory::FactoryInit( ISceneManager* a_mgr, irr::video::IVideoDriver* a_driver)
+void GameObjectFactory::FactoryInit(IrrlichtDevice* a_device)
 {
-    m_mgr = a_mgr;
-    m_driver = a_driver;
+    m_device = a_device;
+    m_driver = a_device->getVideoDriver();
+    m_mgr = a_device->getSceneManager();
 
     CreateAvatar();
     CreateGravity();
@@ -197,7 +193,13 @@ BasketObject* GameObjectFactory::CreateBasket()
     ui->SetNode(uiNode);
     m_display.push_back(ui);
 
-    BasketObject* basket = new BasketObject(ui);
+    IBillboardTextSceneNode* text = m_mgr->addBillboardTextSceneNode(m_device->getGUIEnvironment()->getBuiltInFont(), L"Clear", node, dimension2df(100, 100), vector3df(0, 100, 0));
+    GameObject* textNode = new GameObject();
+    textNode->SetNode(text);
+    textNode->SetVisible(false);
+    m_display.push_back(textNode);
+
+    BasketObject* basket = new BasketObject(ui, textNode);
     basket->SetNode(node);
 
     ui->SetPosition(0, 50, 0);
